@@ -1,0 +1,210 @@
+# ============================================================================ #
+# KIRITE Protocol — Deployment Configuration
+# ============================================================================ #
+#
+# This file contains cluster-specific deployment parameters.
+# Referenced by deploy.sh, migrate.ts, and the TypeScript SDK.
+#
+
+[global]
+program_name = "kirite"
+protocol_version = "0.1.0"
+
+# Protocol fee: 0.1% (10 basis points)
+fee_bps = 10
+
+# Burn ratio: 50% of collected fees are burned
+burn_ratio_bps = 5000
+
+# ---------------------------------------------------------------------------- #
+# Devnet
+# ---------------------------------------------------------------------------- #
+
+[devnet]
+program_id = "57yf6giJCEnjhFt7sLA3sN5GLkaZvaAfWchdvcrkcUCH"
+rpc_url = "https://api.devnet.solana.com"
+ws_url = "wss://api.devnet.solana.com/"
+commitment = "confirmed"
+
+[devnet.fee]
+fee_bps = 10
+burn_ratio_bps = 5000
+
+[devnet.mints]
+SOL  = "So11111111111111111111111111111111111111112"
+USDC = "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"  # devnet USDC
+USDT = "EJwZgeZrdC8TXTQbQBoL6bfuAnFUQYtNjCraGmmX1hEP"  # devnet USDT placeholder
+
+[devnet.shield_pools]
+
+  [devnet.shield_pools.SOL_01]
+  mint = "So11111111111111111111111111111111111111112"
+  denomination = 100_000_000          # 0.1 SOL (lamports)
+  timelock_seconds = 300              # 5 minutes
+  min_anonymity_set = 2               # low threshold for testing
+
+  [devnet.shield_pools.SOL_1]
+  mint = "So11111111111111111111111111111111111111112"
+  denomination = 1_000_000_000        # 1 SOL
+  timelock_seconds = 300
+  min_anonymity_set = 2
+
+  [devnet.shield_pools.USDC_100]
+  mint = "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"
+  denomination = 100_000_000          # 100 USDC (6 decimals)
+  timelock_seconds = 300
+  min_anonymity_set = 2
+
+  [devnet.shield_pools.USDT_100]
+  mint = "EJwZgeZrdC8TXTQbQBoL6bfuAnFUQYtNjCraGmmX1hEP"
+  denomination = 100_000_000          # 100 USDT (6 decimals)
+  timelock_seconds = 300
+  min_anonymity_set = 2
+
+# ---------------------------------------------------------------------------- #
+# Testnet
+# ---------------------------------------------------------------------------- #
+
+[testnet]
+program_id = "57yf6giJCEnjhFt7sLA3sN5GLkaZvaAfWchdvcrkcUCH"
+rpc_url = "https://api.testnet.solana.com"
+ws_url = "wss://api.testnet.solana.com/"
+commitment = "confirmed"
+
+[testnet.fee]
+fee_bps = 10
+burn_ratio_bps = 5000
+
+[testnet.mints]
+SOL = "So11111111111111111111111111111111111111112"
+
+[testnet.shield_pools]
+
+  [testnet.shield_pools.SOL_01]
+  mint = "So11111111111111111111111111111111111111112"
+  denomination = 100_000_000
+  timelock_seconds = 600
+  min_anonymity_set = 3
+
+  [testnet.shield_pools.SOL_1]
+  mint = "So11111111111111111111111111111111111111112"
+  denomination = 1_000_000_000
+  timelock_seconds = 600
+  min_anonymity_set = 3
+
+# ---------------------------------------------------------------------------- #
+# Mainnet-Beta
+# ---------------------------------------------------------------------------- #
+
+[mainnet_beta]
+program_id = "57yf6giJCEnjhFt7sLA3sN5GLkaZvaAfWchdvcrkcUCH"  # UPDATE after keygen
+rpc_url = "https://api.mainnet-beta.solana.com"
+ws_url = "wss://api.mainnet-beta.solana.com/"
+commitment = "finalized"
+
+[mainnet_beta.fee]
+fee_bps = 10
+burn_ratio_bps = 5000
+
+[mainnet_beta.mints]
+SOL  = "So11111111111111111111111111111111111111112"
+USDC = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+USDT = "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
+
+[mainnet_beta.shield_pools]
+
+  # --- SOL pools ---
+
+  [mainnet_beta.shield_pools.SOL_01]
+  mint = "So11111111111111111111111111111111111111112"
+  denomination = 100_000_000          # 0.1 SOL
+  timelock_seconds = 3600             # 1 hour
+  min_anonymity_set = 5
+  max_anonymity_set = 1048576         # 2^20 (Merkle tree capacity)
+
+  [mainnet_beta.shield_pools.SOL_1]
+  mint = "So11111111111111111111111111111111111111112"
+  denomination = 1_000_000_000        # 1 SOL
+  timelock_seconds = 3600
+  min_anonymity_set = 5
+  max_anonymity_set = 1048576
+
+  [mainnet_beta.shield_pools.SOL_10]
+  mint = "So11111111111111111111111111111111111111112"
+  denomination = 10_000_000_000       # 10 SOL
+  timelock_seconds = 7200             # 2 hours
+  min_anonymity_set = 10
+  max_anonymity_set = 1048576
+
+  # --- USDC pools ---
+
+  [mainnet_beta.shield_pools.USDC_100]
+  mint = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+  denomination = 100_000_000          # 100 USDC
+  timelock_seconds = 3600
+  min_anonymity_set = 5
+  max_anonymity_set = 1048576
+
+  [mainnet_beta.shield_pools.USDC_1000]
+  mint = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+  denomination = 1_000_000_000        # 1,000 USDC
+  timelock_seconds = 7200
+  min_anonymity_set = 10
+  max_anonymity_set = 1048576
+
+  [mainnet_beta.shield_pools.USDC_10000]
+  mint = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+  denomination = 10_000_000_000       # 10,000 USDC
+  timelock_seconds = 14400            # 4 hours
+  min_anonymity_set = 15
+  max_anonymity_set = 1048576
+
+  # --- USDT pools ---
+
+  [mainnet_beta.shield_pools.USDT_100]
+  mint = "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
+  denomination = 100_000_000          # 100 USDT
+  timelock_seconds = 3600
+  min_anonymity_set = 5
+  max_anonymity_set = 1048576
+
+  [mainnet_beta.shield_pools.USDT_1000]
+  mint = "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
+  denomination = 1_000_000_000        # 1,000 USDT
+  timelock_seconds = 7200
+  min_anonymity_set = 10
+  max_anonymity_set = 1048576
+
+# ---------------------------------------------------------------------------- #
+# Governance (mainnet)
+# ---------------------------------------------------------------------------- #
+
+[mainnet_beta.governance]
+# Timelock duration for governance proposals (48 hours)
+proposal_timelock_seconds = 172800
+
+# Required signers for multi-sig governance actions
+required_signers = 3
+
+# Maximum number of governance signers
+max_signers = 7
+
+# Grace period after timelock before proposal expires (24 hours)
+execution_grace_period_seconds = 86400
+
+# ---------------------------------------------------------------------------- #
+# Operational Limits
+# ---------------------------------------------------------------------------- #
+
+[mainnet_beta.limits]
+# Maximum single deposit (anti-whale). 0 = no limit.
+max_single_deposit = 0
+
+# Rate limit: max deposits per wallet per hour
+max_deposits_per_hour = 10
+
+# Minimum time between deposits from same wallet (seconds)
+deposit_cooldown_seconds = 60
+
+# Maximum pending withdrawals per pool
+max_pending_withdrawals = 1000
