@@ -363,3 +363,4 @@ fn verify_equality_proof(
 
     Ok(())
 }
+// rev8
