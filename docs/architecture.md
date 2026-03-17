@@ -246,3 +246,4 @@ programs/kirite/src/
 3. **No negative balances**: Range proofs enforce that all encrypted values are non-negative.
 4. **Forward secrecy**: Stealth address ephemeral keys are used once and discarded. Compromising a view key reveals which payments were received but does not allow spending.
 5. **Pool integrity**: The Merkle root is updated atomically with each deposit. Withdrawal proofs are verified against the current root.
+<!-- arch note --> #3
