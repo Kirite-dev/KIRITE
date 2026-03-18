@@ -500,3 +500,4 @@ The KIRITE program emits events for all major operations. Index these events for
 - `FeeProposalCreated`
 - `FeeProposalExecuted`
 - `AuthorityTransferred`
+<!-- deploy note --> #5
