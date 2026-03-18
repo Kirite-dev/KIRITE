@@ -336,3 +336,4 @@ export interface StealthAnnouncementEvent {
   timestamp: number;
   signature: string;
 }
+// type rev #6
