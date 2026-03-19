@@ -314,3 +314,4 @@ export function deserializeEncryptedAmount(data: Uint8Array): EncryptedAmount {
     randomness: data.slice(64, 96),
   };
 }
+// enc rev #10
