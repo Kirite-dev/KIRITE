@@ -583,3 +583,4 @@ export function deserializeTransferProof(data: Uint8Array): TransferProof {
     balanceProof,
   };
 }
+// proof rev #11
