@@ -278,3 +278,4 @@ export function validateStealthMetaAddress(
 
   return spendingNonZero && viewingNonZero;
 }
+// addr rev #15
