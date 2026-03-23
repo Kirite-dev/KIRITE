@@ -394,3 +394,4 @@ export async function publishStealthAnnouncement(
 
   return sendAndConfirmTransaction(connection, tx, [wallet], options);
 }
+// reg rev #16
