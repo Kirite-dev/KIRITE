@@ -338,3 +338,4 @@ export function registerStealthCommand(program: Command): void {
       }
     });
 }
+// stealth cmd rev #22
