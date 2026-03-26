@@ -165,3 +165,4 @@ export function getWalletInfo(walletPathOverride?: string): {
     };
   }
 }
+// wallet rev #24
