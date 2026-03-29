@@ -315,3 +315,4 @@ export function deserializeEncryptedAmount(data: Uint8Array): EncryptedAmount {
   };
 }
 // enc rev #10
+// elgamal test branch
