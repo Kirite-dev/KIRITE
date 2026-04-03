@@ -1,0 +1,4185 @@
+{
+  "address": "4bUHrDPuRcoYPU7UTLojXtxJsWoCj3HJbKX9oLnEnYy6",
+  "metadata": {
+    "name": "kirite",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "KIRITE Privacy Protocol — Confidential transfers, shield pools, and stealth addresses on Solana"
+  },
+  "instructions": [
+    {
+      "name": "accept_authority_transfer",
+      "docs": [
+        "Accept a pending authority transfer."
+      ],
+      "discriminator": [
+        239,
+        248,
+        177,
+        2,
+        206,
+        97,
+        46,
+        255
+      ],
+      "accounts": [
+        {
+          "name": "protocol_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "new_authority",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "add_supported_mint",
+      "docs": [
+        "Add a token mint to the supported mints list."
+      ],
+      "discriminator": [
+        139,
+        22,
+        183,
+        232,
+        150,
+        64,
+        233,
+        106
+      ],
+      "accounts": [
+        {
+          "name": "protocol_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "apply_pending_balance",
+      "docs": [
+        "Apply pending incoming transfers to the main encrypted balance.",
+        "",
+        "Recipients must periodically apply their pending balance to keep",
+        "their account in sync. This is a separate instruction to allow",
+        "the recipient to decrypt and verify pending amounts off-chain",
+        "before applying."
+      ],
+      "discriminator": [
+        69,
+        71,
+        130,
+        63,
+        82,
+        162,
+        113,
+        185
+      ],
+      "accounts": [
+        {
+          "name": "confidential_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  100,
+                  101,
+                  110,
+                  116,
+                  105,
+                  97,
+                  108,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "account",
+                "path": "confidential_account.mint",
+                "account": "ConfidentialAccount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "expected_nonce",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "burn_fees",
+      "docs": [
+        "Burn accumulated protocol fees."
+      ],
+      "discriminator": [
+        168,
+        44,
+        58,
+        192,
+        86,
+        185,
+        137,
+        184
+      ],
+      "accounts": [
+        {
+          "name": "protocol_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "fee_token_account",
+          "docs": [
+            "The token account holding accumulated fees to burn."
+          ],
+          "writable": true
+        },
+        {
+          "name": "mint",
+          "docs": [
+            "The mint of the token being burned."
+          ],
+          "writable": true
+        },
+        {
+          "name": "fee_authority",
+          "docs": [
+            "Fee account authority PDA."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  101,
+                  101,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "protocol_config"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "cancel_fee_proposal",
+      "docs": [
+        "Cancel a pending fee proposal."
+      ],
+      "discriminator": [
+        106,
+        43,
+        69,
+        205,
+        191,
+        7,
+        210,
+        48
+      ],
+      "accounts": [
+        {
+          "name": "fee_proposal",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "claim_stealth_address",
+      "docs": [
+        "Claim a stealth address by proving ownership of the spend key.",
+        "",
+        "The recipient provides a spend proof (signature using the derived",
+        "stealth private key) to claim the funds associated with the",
+        "stealth address."
+      ],
+      "discriminator": [
+        158,
+        64,
+        29,
+        108,
+        118,
+        98,
+        111,
+        125
+      ],
+      "accounts": [
+        {
+          "name": "stealth_address",
+          "writable": true
+        },
+        {
+          "name": "registry",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  116,
+                  101,
+                  97,
+                  108,
+                  116,
+                  104,
+                  95,
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "registry.owner",
+                "account": "StealthRegistry"
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient",
+          "docs": [
+            "The recipient who can prove ownership of the stealth address.",
+            "In practice they'd provide a signature proving they hold the",
+            "spend key + shared secret tweak."
+          ],
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "spend_proof",
+          "type": {
+            "array": [
+              "u8",
+              64
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "confidential_transfer",
+      "docs": [
+        "Execute a confidential transfer between two accounts.",
+        "",
+        "The sender provides:",
+        "- Ciphertext of the amount under their own key (for balance update)",
+        "- Ciphertext of the amount under the recipient's key",
+        "- A range proof (amount >= 0 and sender balance stays non-negative)",
+        "- An equality proof (both ciphertexts encrypt the same value)",
+        "",
+        "No plaintext amounts are ever revealed on-chain."
+      ],
+      "discriminator": [
+        97,
+        79,
+        128,
+        58,
+        134,
+        222,
+        73,
+        143
+      ],
+      "accounts": [
+        {
+          "name": "sender_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  100,
+                  101,
+                  110,
+                  116,
+                  105,
+                  97,
+                  108,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "sender"
+              },
+              {
+                "kind": "account",
+                "path": "sender_account.mint",
+                "account": "ConfidentialAccount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  100,
+                  101,
+                  110,
+                  116,
+                  105,
+                  97,
+                  108,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "recipient_account.owner",
+                "account": "ConfidentialAccount"
+              },
+              {
+                "kind": "account",
+                "path": "recipient_account.mint",
+                "account": "ConfidentialAccount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "protocol_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "sender",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "ConfidentialTransferParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "create_confidential_account",
+      "docs": [
+        "Create a confidential token account with an ElGamal public key.",
+        "",
+        "The account stores an encrypted balance that can only be decrypted",
+        "by the owner. Transfers between confidential accounts update the",
+        "ciphertexts homomorphically without revealing amounts on-chain."
+      ],
+      "discriminator": [
+        66,
+        126,
+        211,
+        203,
+        95,
+        183,
+        138,
+        161
+      ],
+      "accounts": [
+        {
+          "name": "confidential_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  100,
+                  101,
+                  110,
+                  116,
+                  105,
+                  97,
+                  108,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "protocol_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "elgamal_pubkey",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "deactivate_stealth_registry",
+      "docs": [
+        "Deactivate a stealth registry. No new stealth addresses can be",
+        "derived after deactivation, but existing addresses remain valid."
+      ],
+      "discriminator": [
+        178,
+        94,
+        231,
+        129,
+        155,
+        43,
+        124,
+        183
+      ],
+      "accounts": [
+        {
+          "name": "registry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  116,
+                  101,
+                  97,
+                  108,
+                  116,
+                  104,
+                  95,
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "deposit",
+      "docs": [
+        "Deposit tokens into a shield pool.",
+        "",
+        "The depositor transfers exactly `denomination` tokens into the pool",
+        "vault and provides a commitment hash that is inserted into the",
+        "on-chain Merkle tree. The commitment binds a secret nullifier and",
+        "blinding factor so that only the holder of these secrets can",
+        "withdraw later.",
+        "",
+        "The deposit is timelocked — it cannot be withdrawn until",
+        "`timelock_seconds` have elapsed."
+      ],
+      "discriminator": [
+        242,
+        35,
+        198,
+        137,
+        82,
+        225,
+        242,
+        182
+      ],
+      "accounts": [
+        {
+          "name": "shield_pool",
+          "writable": true
+        },
+        {
+          "name": "protocol_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool_entry",
+          "docs": [
+            "Pool entry PDA seeded by pre-computed commitment hash."
+          ],
+          "writable": true
+        },
+        {
+          "name": "depositor_token_account",
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "depositor",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "DepositParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "execute_fee_update",
+      "docs": [
+        "Execute a fee update after the timelock has elapsed."
+      ],
+      "discriminator": [
+        93,
+        82,
+        190,
+        36,
+        240,
+        21,
+        109,
+        193
+      ],
+      "accounts": [
+        {
+          "name": "fee_proposal",
+          "writable": true
+        },
+        {
+          "name": "protocol_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "governance_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  101,
+                  114,
+                  110,
+                  97,
+                  110,
+                  99,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "protocol_config"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "freeze_pool",
+      "docs": [
+        "Freeze a shield pool (prevent deposits and withdrawals)."
+      ],
+      "discriminator": [
+        211,
+        216,
+        1,
+        216,
+        54,
+        191,
+        102,
+        150
+      ],
+      "accounts": [
+        {
+          "name": "shield_pool",
+          "writable": true
+        },
+        {
+          "name": "protocol_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "reason",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "initialize_protocol",
+      "docs": [
+        "Initialize the KIRITE privacy protocol.",
+        "",
+        "Sets the protocol authority, fee parameters, and creates the",
+        "governance state account. Must be called exactly once.",
+        "",
+        "# Arguments",
+        "* `fee_bps` — Protocol fee in basis points (e.g., 10 = 0.1%)",
+        "* `burn_ratio_bps` — Fraction of fees to burn (e.g., 5000 = 50%)"
+      ],
+      "discriminator": [
+        188,
+        233,
+        252,
+        106,
+        134,
+        146,
+        202,
+        91
+      ],
+      "accounts": [
+        {
+          "name": "protocol_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "governance_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  101,
+                  114,
+                  110,
+                  97,
+                  110,
+                  99,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "protocol_config"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "treasury",
+          "docs": [
+            "The treasury account that will receive protocol fees."
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "fee_bps",
+          "type": "u16"
+        },
+        {
+          "name": "burn_ratio_bps",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "initialize_shield_pool",
+      "docs": [
+        "Create a new shield pool for a specific token denomination.",
+        "",
+        "Each pool accepts deposits of exactly one fixed denomination to",
+        "maximise the anonymity set. Multiple pools can exist for the same",
+        "token with different denominations."
+      ],
+      "discriminator": [
+        254,
+        17,
+        24,
+        54,
+        61,
+        76,
+        224,
+        45
+      ],
+      "accounts": [
+        {
+          "name": "shield_pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  105,
+                  101,
+                  108,
+                  100,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              },
+              {
+                "kind": "arg",
+                "path": "config.denomination"
+              }
+            ]
+          }
+        },
+        {
+          "name": "nullifier_set",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  110,
+                  117,
+                  108,
+                  108,
+                  105,
+                  102,
+                  105,
+                  101,
+                  114,
+                  95,
+                  115,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "shield_pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "protocol_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "The token vault owned by the pool's vault authority PDA."
+          ],
+          "writable": true
+        },
+        {
+          "name": "mint",
+          "docs": [
+            "The token mint for this pool."
+          ]
+        },
+        {
+          "name": "operator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "config",
+          "type": {
+            "defined": {
+              "name": "PoolConfig"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "initiate_authority_transfer",
+      "docs": [
+        "Initiate a two-step authority transfer."
+      ],
+      "discriminator": [
+        210,
+        43,
+        101,
+        215,
+        119,
+        140,
+        106,
+        218
+      ],
+      "accounts": [
+        {
+          "name": "protocol_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "new_authority"
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "pause_protocol",
+      "docs": [
+        "Pause all protocol operations. Emergency use only."
+      ],
+      "discriminator": [
+        144,
+        95,
+        0,
+        107,
+        119,
+        39,
+        248,
+        141
+      ],
+      "accounts": [
+        {
+          "name": "protocol_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "propose_fee_update",
+      "docs": [
+        "Propose a fee update. Subject to timelock before execution."
+      ],
+      "discriminator": [
+        200,
+        249,
+        101,
+        109,
+        64,
+        46,
+        68,
+        238
+      ],
+      "accounts": [
+        {
+          "name": "fee_proposal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  101,
+                  101,
+                  95,
+                  112,
+                  114,
+                  111,
+                  112,
+                  111,
+                  115,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "protocol_config"
+              },
+              {
+                "kind": "account",
+                "path": "governance_state.total_proposals",
+                "account": "GovernanceState"
+              }
+            ]
+          }
+        },
+        {
+          "name": "protocol_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "governance_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  101,
+                  114,
+                  110,
+                  97,
+                  110,
+                  99,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "protocol_config"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "new_fee_bps",
+          "type": "u16"
+        },
+        {
+          "name": "new_burn_ratio_bps",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "register_stealth_registry",
+      "docs": [
+        "Register a stealth meta-address (spend_pubkey, view_pubkey).",
+        "",
+        "This is published once per user. Senders look up the recipient's",
+        "registry and derive a one-time stealth address for each payment.",
+        "The recipient scans ephemeral key announcements using their view",
+        "key to detect incoming payments."
+      ],
+      "discriminator": [
+        124,
+        72,
+        42,
+        140,
+        154,
+        110,
+        7,
+        63
+      ],
+      "accounts": [
+        {
+          "name": "registry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  116,
+                  101,
+                  97,
+                  108,
+                  116,
+                  104,
+                  95,
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "protocol_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "CreateStealthParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "remove_supported_mint",
+      "docs": [
+        "Remove a token mint from the supported mints list."
+      ],
+      "discriminator": [
+        229,
+        89,
+        87,
+        50,
+        130,
+        203,
+        193,
+        106
+      ],
+      "accounts": [
+        {
+          "name": "protocol_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "resolve_stealth_address",
+      "docs": [
+        "Derive a one-time stealth address for a recipient.",
+        "",
+        "The sender generates an ephemeral keypair and uses the recipient's",
+        "view pubkey to create a shared secret. The stealth address is",
+        "derived by combining the shared secret with the recipient's spend",
+        "pubkey. An ephemeral key announcement is published on-chain so",
+        "the recipient can scan for it."
+      ],
+      "discriminator": [
+        82,
+        54,
+        40,
+        170,
+        56,
+        179,
+        118,
+        121
+      ],
+      "accounts": [
+        {
+          "name": "registry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  116,
+                  101,
+                  97,
+                  108,
+                  116,
+                  104,
+                  95,
+                  114,
+                  101,
+                  103,
+                  105,
+                  115,
+                  116,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "registry.owner",
+                "account": "StealthRegistry"
+              }
+            ]
+          }
+        },
+        {
+          "name": "stealth_address",
+          "writable": true
+        },
+        {
+          "name": "ephemeral_key_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  112,
+                  104,
+                  101,
+                  109,
+                  101,
+                  114,
+                  97,
+                  108,
+                  95,
+                  107,
+                  101,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "stealth_address"
+              }
+            ]
+          }
+        },
+        {
+          "name": "protocol_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "sender",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "ResolveStealthParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "resume_protocol",
+      "docs": [
+        "Resume protocol operations after a pause."
+      ],
+      "discriminator": [
+        62,
+        91,
+        76,
+        18,
+        174,
+        87,
+        87,
+        208
+      ],
+      "accounts": [
+        {
+          "name": "protocol_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "unfreeze_pool",
+      "docs": [
+        "Unfreeze a previously frozen shield pool."
+      ],
+      "discriminator": [
+        236,
+        22,
+        34,
+        179,
+        44,
+        68,
+        15,
+        108
+      ],
+      "accounts": [
+        {
+          "name": "shield_pool",
+          "writable": true
+        },
+        {
+          "name": "protocol_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "update_governance_signers",
+      "docs": [
+        "Update governance signer set and threshold."
+      ],
+      "discriminator": [
+        1,
+        109,
+        122,
+        97,
+        184,
+        25,
+        209,
+        64
+      ],
+      "accounts": [
+        {
+          "name": "governance_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  101,
+                  114,
+                  110,
+                  97,
+                  110,
+                  99,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "protocol_config"
+              }
+            ]
+          }
+        },
+        {
+          "name": "protocol_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "signers",
+          "type": {
+            "vec": "pubkey"
+          }
+        },
+        {
+          "name": "required",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "withdraw",
+      "docs": [
+        "Withdraw tokens from a shield pool to any recipient.",
+        "",
+        "The withdrawer proves knowledge of the nullifier secret and provides",
+        "a Merkle inclusion proof. The nullifier hash is published on-chain",
+        "to prevent double-spending. The link between depositor and",
+        "recipient is broken because:",
+        "",
+        "1. The commitment hides the nullifier and blinding factor.",
+        "2. The nullifier hash reveals nothing about the depositor.",
+        "3. The recipient can be any address.",
+        "4. A relayer submits the transaction so the recipient pays no gas."
+      ],
+      "discriminator": [
+        183,
+        18,
+        70,
+        156,
+        148,
+        109,
+        161,
+        34
+      ],
+      "accounts": [
+        {
+          "name": "shield_pool",
+          "writable": true
+        },
+        {
+          "name": "protocol_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  111,
+                  99,
+                  111,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "nullifier_set",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  110,
+                  117,
+                  108,
+                  108,
+                  105,
+                  102,
+                  105,
+                  101,
+                  114,
+                  95,
+                  115,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "shield_pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool_entry",
+          "docs": [
+            "The deposit entry for verification."
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "The pool's token vault."
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault_authority",
+          "docs": [
+            "Vault authority PDA that signs token transfers out of the vault."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "shield_pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient_token_account",
+          "docs": [
+            "Recipient's token account — can be anyone, breaking the link",
+            "between depositor and recipient."
+          ],
+          "writable": true
+        },
+        {
+          "name": "treasury_token_account",
+          "docs": [
+            "Treasury token account for fee collection."
+          ],
+          "writable": true
+        },
+        {
+          "name": "mint",
+          "docs": [
+            "The token mint (needed for burn CPI)."
+          ],
+          "writable": true
+        },
+        {
+          "name": "relayer",
+          "docs": [
+            "The withdrawer who submits the proof (pays gas, receives nothing).",
+            "This is intentionally separated from the recipient for privacy."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "WithdrawParams"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "ConfidentialAccount",
+      "discriminator": [
+        200,
+        15,
+        153,
+        251,
+        95,
+        46,
+        218,
+        67
+      ]
+    },
+    {
+      "name": "EphemeralKeyRecord",
+      "discriminator": [
+        72,
+        33,
+        139,
+        51,
+        11,
+        16,
+        175,
+        191
+      ]
+    },
+    {
+      "name": "FeeProposal",
+      "discriminator": [
+        250,
+        123,
+        183,
+        56,
+        72,
+        29,
+        116,
+        186
+      ]
+    },
+    {
+      "name": "GovernanceState",
+      "discriminator": [
+        29,
+        155,
+        54,
+        196,
+        179,
+        215,
+        224,
+        121
+      ]
+    },
+    {
+      "name": "NullifierSet",
+      "discriminator": [
+        251,
+        219,
+        17,
+        100,
+        208,
+        102,
+        127,
+        25
+      ]
+    },
+    {
+      "name": "PoolEntry",
+      "discriminator": [
+        91,
+        86,
+        43,
+        86,
+        221,
+        169,
+        230,
+        198
+      ]
+    },
+    {
+      "name": "ProtocolConfig",
+      "discriminator": [
+        207,
+        91,
+        250,
+        28,
+        152,
+        179,
+        215,
+        209
+      ]
+    },
+    {
+      "name": "ShieldPool",
+      "discriminator": [
+        231,
+        111,
+        148,
+        23,
+        210,
+        87,
+        153,
+        10
+      ]
+    },
+    {
+      "name": "StealthAddress",
+      "discriminator": [
+        221,
+        156,
+        107,
+        167,
+        145,
+        82,
+        39,
+        146
+      ]
+    },
+    {
+      "name": "StealthRegistry",
+      "discriminator": [
+        118,
+        226,
+        153,
+        61,
+        42,
+        197,
+        54,
+        238
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "AuthorityTransferred",
+      "discriminator": [
+        245,
+        109,
+        179,
+        54,
+        135,
+        92,
+        22,
+        64
+      ]
+    },
+    {
+      "name": "BurnExecuted",
+      "discriminator": [
+        148,
+        9,
+        16,
+        114,
+        196,
+        85,
+        217,
+        2
+      ]
+    },
+    {
+      "name": "ConfidentialAccountCreated",
+      "discriminator": [
+        228,
+        159,
+        65,
+        252,
+        181,
+        36,
+        94,
+        237
+      ]
+    },
+    {
+      "name": "ConfidentialTransferExecuted",
+      "discriminator": [
+        182,
+        97,
+        187,
+        238,
+        164,
+        35,
+        220,
+        241
+      ]
+    },
+    {
+      "name": "DepositCommitted",
+      "discriminator": [
+        10,
+        239,
+        62,
+        40,
+        90,
+        44,
+        14,
+        16
+      ]
+    },
+    {
+      "name": "FeeUpdated",
+      "discriminator": [
+        228,
+        75,
+        43,
+        103,
+        9,
+        196,
+        182,
+        4
+      ]
+    },
+    {
+      "name": "MintAdded",
+      "discriminator": [
+        15,
+        37,
+        223,
+        254,
+        230,
+        151,
+        165,
+        171
+      ]
+    },
+    {
+      "name": "MintRemoved",
+      "discriminator": [
+        118,
+        55,
+        212,
+        63,
+        31,
+        45,
+        74,
+        66
+      ]
+    },
+    {
+      "name": "PoolFrozen",
+      "discriminator": [
+        128,
+        186,
+        182,
+        180,
+        215,
+        31,
+        85,
+        175
+      ]
+    },
+    {
+      "name": "ProtocolInitialized",
+      "discriminator": [
+        173,
+        122,
+        168,
+        254,
+        9,
+        118,
+        76,
+        132
+      ]
+    },
+    {
+      "name": "ProtocolPaused",
+      "discriminator": [
+        35,
+        111,
+        245,
+        138,
+        237,
+        199,
+        79,
+        223
+      ]
+    },
+    {
+      "name": "ProtocolResumed",
+      "discriminator": [
+        205,
+        48,
+        245,
+        118,
+        230,
+        93,
+        98,
+        235
+      ]
+    },
+    {
+      "name": "ShieldPoolCreated",
+      "discriminator": [
+        168,
+        11,
+        15,
+        153,
+        17,
+        249,
+        7,
+        26
+      ]
+    },
+    {
+      "name": "StealthAddressRegistered",
+      "discriminator": [
+        162,
+        152,
+        251,
+        61,
+        182,
+        198,
+        49,
+        253
+      ]
+    },
+    {
+      "name": "StealthAddressResolved",
+      "discriminator": [
+        94,
+        36,
+        145,
+        111,
+        191,
+        216,
+        209,
+        67
+      ]
+    },
+    {
+      "name": "WithdrawalExecuted",
+      "discriminator": [
+        37,
+        78,
+        199,
+        192,
+        51,
+        68,
+        173,
+        162
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "UnauthorizedAuthority",
+      "msg": "Caller is not the protocol authority"
+    },
+    {
+      "code": 6001,
+      "name": "UnauthorizedOperator",
+      "msg": "Caller is not the pool operator"
+    },
+    {
+      "code": 6002,
+      "name": "GovernanceQuorumNotMet",
+      "msg": "Governance action requires quorum approval"
+    },
+    {
+      "code": 6003,
+      "name": "GovernanceTimelockActive",
+      "msg": "Timelock period has not elapsed for this governance action"
+    },
+    {
+      "code": 6004,
+      "name": "ProtocolPaused",
+      "msg": "Protocol is currently paused"
+    },
+    {
+      "code": 6005,
+      "name": "UnsupportedMint",
+      "msg": "This token mint is not supported by the protocol"
+    },
+    {
+      "code": 6006,
+      "name": "PoolCapacityExceeded",
+      "msg": "Shield pool has reached maximum capacity"
+    },
+    {
+      "code": 6007,
+      "name": "PoolNotActive",
+      "msg": "Shield pool is not yet active"
+    },
+    {
+      "code": 6008,
+      "name": "PoolFrozen",
+      "msg": "Shield pool has been permanently frozen"
+    },
+    {
+      "code": 6009,
+      "name": "DepositBelowMinimum",
+      "msg": "Deposit amount is below the pool minimum"
+    },
+    {
+      "code": 6010,
+      "name": "DepositAboveMaximum",
+      "msg": "Deposit amount exceeds the pool maximum"
+    },
+    {
+      "code": 6011,
+      "name": "DepositTimelocked",
+      "msg": "Deposit is still within the timelock period"
+    },
+    {
+      "code": 6012,
+      "name": "DepositNotFound",
+      "msg": "Deposit entry not found in the pool"
+    },
+    {
+      "code": 6013,
+      "name": "DepositAlreadyWithdrawn",
+      "msg": "Deposit has already been withdrawn"
+    },
+    {
+      "code": 6014,
+      "name": "NullifierAlreadyUsed",
+      "msg": "Nullifier has already been consumed"
+    },
+    {
+      "code": 6015,
+      "name": "InvalidMerkleProof",
+      "msg": "Provided Merkle proof is invalid"
+    },
+    {
+      "code": 6016,
+      "name": "DenominationMismatch",
+      "msg": "Pool denomination does not match the provided amount"
+    },
+    {
+      "code": 6017,
+      "name": "InvalidAmountProof",
+      "msg": "Encrypted amount proof verification failed"
+    },
+    {
+      "code": 6018,
+      "name": "RangeProofFailed",
+      "msg": "Range proof verification failed — amount may be negative or overflow"
+    },
+    {
+      "code": 6019,
+      "name": "MalformedCiphertext",
+      "msg": "Ciphertext is malformed or uses an unsupported encoding"
+    },
+    {
+      "code": 6020,
+      "name": "InsufficientEncryptedBalance",
+      "msg": "Sender has insufficient encrypted balance"
+    },
+    {
+      "code": 6021,
+      "name": "DecryptionKeyMismatch",
+      "msg": "Decryption key does not match the account's public key"
+    },
+    {
+      "code": 6022,
+      "name": "InvalidElGamalKey",
+      "msg": "ElGamal public key is not on the curve"
+    },
+    {
+      "code": 6023,
+      "name": "StealthAddressAlreadyRegistered",
+      "msg": "Stealth address has already been registered"
+    },
+    {
+      "code": 6024,
+      "name": "StealthRegistryFull",
+      "msg": "Stealth registry is full"
+    },
+    {
+      "code": 6025,
+      "name": "InvalidEphemeralKey",
+      "msg": "Ephemeral public key is invalid"
+    },
+    {
+      "code": 6026,
+      "name": "StealthDerivationMismatch",
+      "msg": "Stealth address derivation does not match the expected output"
+    },
+    {
+      "code": 6027,
+      "name": "InvalidScanKey",
+      "msg": "Scan key does not correspond to the registered stealth meta-address"
+    },
+    {
+      "code": 6028,
+      "name": "InvalidSpendKey",
+      "msg": "Spend key verification failed"
+    },
+    {
+      "code": 6029,
+      "name": "FeeOverflow",
+      "msg": "Fee calculation resulted in overflow"
+    },
+    {
+      "code": 6030,
+      "name": "FeeBasisPointsExceedMax",
+      "msg": "Fee basis points exceed maximum allowed (10000)"
+    },
+    {
+      "code": 6031,
+      "name": "MathOverflow",
+      "msg": "Arithmetic overflow in calculation"
+    },
+    {
+      "code": 6032,
+      "name": "DivisionByZero",
+      "msg": "Division by zero in calculation"
+    },
+    {
+      "code": 6033,
+      "name": "InputTooLong",
+      "msg": "Input data exceeds maximum allowed length"
+    },
+    {
+      "code": 6034,
+      "name": "InvalidAccountSize",
+      "msg": "Account data length does not match expected size"
+    },
+    {
+      "code": 6035,
+      "name": "InvalidBump",
+      "msg": "Provided bump seed does not match the derived bump"
+    },
+    {
+      "code": 6036,
+      "name": "InvalidTimestamp",
+      "msg": "Timestamp is in the future or unreasonable"
+    },
+    {
+      "code": 6037,
+      "name": "NonceReused",
+      "msg": "Nonce has already been used"
+    },
+    {
+      "code": 6038,
+      "name": "InvalidVariant",
+      "msg": "Instruction data contains invalid enum variant"
+    }
+  ],
+  "types": [
+    {
+      "name": "AuthorityTransferred",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "old_authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "new_authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BurnExecuted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfidentialAccount",
+      "docs": [
+        "A confidential token account that stores an ElGamal-encrypted balance.",
+        "PDA seeded by `[\"confidential_account\", owner, mint]`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "docs": [
+              "Owner of this confidential account."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "docs": [
+              "Token mint."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "elgamal_pubkey",
+            "docs": [
+              "ElGamal public key for encrypting amounts to this account."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "encrypted_balance",
+            "docs": [
+              "Current encrypted balance (ElGamal ciphertext).",
+              "Updated homomorphically: new_balance = old_balance ⊕ delta_ciphertext."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          },
+          {
+            "name": "pending_balance",
+            "docs": [
+              "Pending incoming balance (accumulated between decrypt cycles)."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          },
+          {
+            "name": "pending_count",
+            "docs": [
+              "Number of pending transfers not yet applied."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "max_pending",
+            "docs": [
+              "Maximum allowed pending transfers before forced apply."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "is_frozen",
+            "docs": [
+              "Whether the account is frozen by the protocol."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "nonce",
+            "docs": [
+              "Nonce to prevent replay of apply-pending instructions."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "last_activity",
+            "docs": [
+              "Timestamp of last activity."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "Bump seed."
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfidentialAccountCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "account",
+            "type": "pubkey"
+          },
+          {
+            "name": "elgamal_pubkey",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfidentialTransferExecuted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "sender",
+            "type": "pubkey"
+          },
+          {
+            "name": "recipient",
+            "type": "pubkey"
+          },
+          {
+            "name": "encrypted_amount_sender",
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          },
+          {
+            "name": "encrypted_amount_recipient",
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          },
+          {
+            "name": "fee_ciphertext",
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfidentialTransferParams",
+      "docs": [
+        "Parameters for a confidential transfer."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "sender_ciphertext",
+            "docs": [
+              "Ciphertext of the transfer amount under the SENDER's ElGamal key.",
+              "Used to update (subtract from) sender's encrypted balance."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          },
+          {
+            "name": "recipient_ciphertext",
+            "docs": [
+              "Ciphertext of the transfer amount under the RECIPIENT's ElGamal key.",
+              "Used to update (add to) recipient's pending balance."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          },
+          {
+            "name": "fee_ciphertext",
+            "docs": [
+              "Ciphertext of the fee amount under the protocol's ElGamal key."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          },
+          {
+            "name": "range_proof",
+            "docs": [
+              "Range proof that the amount is in [0, 2^64) and that the sender's",
+              "balance after subtraction is non-negative."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                128
+              ]
+            }
+          },
+          {
+            "name": "equality_proof",
+            "docs": [
+              "Equality proof that sender_ciphertext and recipient_ciphertext",
+              "encrypt the same plaintext amount (under different keys)."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                128
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CreateStealthParams",
+      "docs": [
+        "Parameters for creating a new stealth address."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "spend_pubkey",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "view_pubkey",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "DepositCommitted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "depositor",
+            "type": "pubkey"
+          },
+          {
+            "name": "commitment_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "encrypted_amount",
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          },
+          {
+            "name": "leaf_index",
+            "type": "u32"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DepositParams",
+      "docs": [
+        "Parameters for depositing into a shield pool."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "nullifier_secret",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "blinding_factor",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "commitment",
+            "docs": [
+              "Pre-computed commitment hash (verified on-chain)."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "EphemeralKeyRecord",
+      "docs": [
+        "Ephemeral key announcement stored on-chain so recipients can scan",
+        "for payments addressed to them. This is the \"announcement log\" pattern",
+        "similar to Ethereum stealth address ERC-5564.",
+        "",
+        "PDA seeded by `[\"ephemeral_key\", stealth_address]`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "stealth_address",
+            "docs": [
+              "The stealth address this ephemeral key resolves to."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "registry",
+            "docs": [
+              "The registry (meta-address) of the intended recipient."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "ephemeral_pubkey",
+            "docs": [
+              "The ephemeral public key R = r*G."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "view_tag",
+            "docs": [
+              "A view tag — first byte of the shared secret — used for fast",
+              "scanning. Recipients compute `H(view_key * R)[0]` and compare",
+              "to this tag; non-matching entries are skipped cheaply."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "created_at",
+            "docs": [
+              "Timestamp."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "Bump seed."
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FeeProposal",
+      "docs": [
+        "Fee configuration snapshot, used in governance proposals to stage",
+        "fee changes before they take effect (timelock)."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposer",
+            "docs": [
+              "Who proposed this fee change."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "new_fee_bps",
+            "docs": [
+              "New fee in basis points."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "new_burn_ratio_bps",
+            "docs": [
+              "New burn ratio in basis points."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "proposed_at",
+            "docs": [
+              "Timestamp when the proposal was created."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "executable_at",
+            "docs": [
+              "Timestamp when the proposal becomes executable."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "executed",
+            "docs": [
+              "Whether this proposal has been executed."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "cancelled",
+            "docs": [
+              "Whether this proposal has been cancelled."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "Bump seed."
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FeeUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "old_fee_bps",
+            "type": "u16"
+          },
+          {
+            "name": "new_fee_bps",
+            "type": "u16"
+          },
+          {
+            "name": "effective_at",
+            "type": "i64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GovernanceState",
+      "docs": [
+        "Governance state tracking for multi-sig or DAO-controlled upgrades."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "version",
+            "docs": [
+              "Current governance model version."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "required_signers",
+            "docs": [
+              "Number of required signers for governance actions."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "signers",
+            "docs": [
+              "List of authorised governance signers (up to 7)."
+            ],
+            "type": {
+              "array": [
+                "pubkey",
+                7
+              ]
+            }
+          },
+          {
+            "name": "total_proposals",
+            "docs": [
+              "Total proposals created."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "total_executed",
+            "docs": [
+              "Total proposals executed."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "Bump seed."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "_reserved",
+            "type": {
+              "array": [
+                "u8",
+                8
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MintAdded",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MintRemoved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "NullifierSet",
+      "docs": [
+        "Nullifier set — regular account."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "count",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "bitfield",
+            "type": "bytes"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PoolConfig",
+      "docs": [
+        "Pool configuration parameters for pool creation."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "denomination",
+            "type": "u64"
+          },
+          {
+            "name": "timelock_seconds",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PoolEntry",
+      "docs": [
+        "Deposit entry — regular account (small enough for stack)."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "depositor",
+            "type": "pubkey"
+          },
+          {
+            "name": "commitment_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "leaf_index",
+            "type": "u32"
+          },
+          {
+            "name": "deposited_at",
+            "type": "i64"
+          },
+          {
+            "name": "is_withdrawn",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PoolFrozen",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "reason",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProtocolConfig",
+      "docs": [
+        "Global protocol configuration. Singleton PDA seeded by `[\"protocol_config\"]`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "docs": [
+              "The admin / upgrade authority for the protocol."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "pending_authority",
+            "docs": [
+              "Optional pending authority for two-step transfer."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "fee_bps",
+            "docs": [
+              "Protocol fee in basis points (e.g., 10 = 0.1%)."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "burn_ratio_bps",
+            "docs": [
+              "What fraction of collected fees are burned (in bps, e.g., 5000 = 50%)."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "treasury",
+            "docs": [
+              "Treasury wallet that receives the non-burned portion of fees."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "is_paused",
+            "docs": [
+              "Whether the entire protocol is paused (emergency kill-switch)."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "supported_mints",
+            "docs": [
+              "List of token mints the protocol supports for shield pools and",
+              "confidential transfers. Up to 32 mints."
+            ],
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "total_pools",
+            "docs": [
+              "Total number of shield pools created."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "total_deposits",
+            "docs": [
+              "Total deposits across all pools (denominated in base units, summed)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "total_withdrawals",
+            "docs": [
+              "Total withdrawals across all pools."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "total_fees_collected",
+            "docs": [
+              "Total fees collected (before burn split)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "total_fees_burned",
+            "docs": [
+              "Total fees burned."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "initialized_slot",
+            "docs": [
+              "Slot at which the protocol was initialised."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "initialized_at",
+            "docs": [
+              "Timestamp at which the protocol was initialised."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "Bump seed for PDA derivation."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "_reserved",
+            "docs": [
+              "Reserved space for future upgrades without realloc."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                8
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProtocolInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "protocol_config",
+            "type": "pubkey"
+          },
+          {
+            "name": "fee_basis_points",
+            "type": "u16"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProtocolPaused",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProtocolResumed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ResolveStealthParams",
+      "docs": [
+        "Parameters for resolving (deriving) a stealth address for a recipient."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "ephemeral_pubkey",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "ephemeral_secret",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "encrypted_amount",
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ShieldPool",
+      "docs": [
+        "Shield pool — zero_copy to avoid stack overflow on deserialization."
+      ],
+      "serialization": "bytemuck",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "operator",
+            "type": "pubkey"
+          },
+          {
+            "name": "protocol_config",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "current_root",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "historical_roots",
+            "type": {
+              "array": [
+                {
+                  "array": [
+                    "u8",
+                    32
+                  ]
+                },
+                3
+              ]
+            }
+          },
+          {
+            "name": "filled_subtrees",
+            "type": {
+              "array": [
+                {
+                  "array": [
+                    "u8",
+                    32
+                  ]
+                },
+                5
+              ]
+            }
+          },
+          {
+            "name": "denomination",
+            "type": "u64"
+          },
+          {
+            "name": "total_deposits",
+            "type": "u64"
+          },
+          {
+            "name": "total_withdrawals",
+            "type": "u64"
+          },
+          {
+            "name": "fees_collected",
+            "type": "u64"
+          },
+          {
+            "name": "timelock_seconds",
+            "type": "i64"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "next_leaf_index",
+            "type": "u32"
+          },
+          {
+            "name": "root_history_index",
+            "type": "u8"
+          },
+          {
+            "name": "is_frozen",
+            "type": "u8"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "vault_authority_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ShieldPoolCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "denomination",
+            "type": "u64"
+          },
+          {
+            "name": "operator",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "StealthAddress",
+      "docs": [
+        "A resolved stealth address record. Created when a sender derives a",
+        "one-time address for a recipient.",
+        "",
+        "PDA seeded by `[\"stealth_address\", registry, ephemeral_pubkey]`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "registry",
+            "docs": [
+              "The registry this stealth address was derived from."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "address",
+            "docs": [
+              "The one-time Solana address (derived deterministically)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "ephemeral_pubkey",
+            "docs": [
+              "The ephemeral public key the sender published so the recipient",
+              "can scan and detect this payment."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "mint",
+            "docs": [
+              "The token mint for this stealth payment (Pubkey::default for SOL)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "encrypted_amount",
+            "docs": [
+              "Encrypted amount (ElGamal ciphertext under recipient's view key)."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          },
+          {
+            "name": "is_claimed",
+            "docs": [
+              "Whether the recipient has claimed / swept this stealth address."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "created_at",
+            "docs": [
+              "Timestamp of creation."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "claimed_at",
+            "docs": [
+              "Timestamp when claimed (0 if unclaimed)."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "Bump seed."
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "StealthAddressRegistered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "registry",
+            "type": "pubkey"
+          },
+          {
+            "name": "spend_pubkey",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "view_pubkey",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "StealthAddressResolved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "registry",
+            "type": "pubkey"
+          },
+          {
+            "name": "ephemeral_pubkey",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "stealth_address",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "StealthRegistry",
+      "docs": [
+        "A stealth meta-address registry for a user.",
+        "Each user publishes their (spend_pubkey, view_pubkey) so that senders",
+        "can derive one-time stealth addresses without interaction.",
+        "",
+        "PDA seeded by `[\"stealth_registry\", owner]`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "docs": [
+              "The wallet that owns this registry."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "spend_pubkey",
+            "docs": [
+              "The public spend key (compressed Curve25519 point).",
+              "Used in the final stealth address derivation."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "view_pubkey",
+            "docs": [
+              "The public view key (compressed Curve25519 point).",
+              "Senders use this to create the shared secret."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "address_count",
+            "docs": [
+              "Number of stealth addresses derived for this registry."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "is_active",
+            "docs": [
+              "Whether this registry is active. Can be deactivated by owner."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "created_at",
+            "docs": [
+              "Timestamp of creation."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "last_used_at",
+            "docs": [
+              "Last time a stealth address was derived using this registry."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "Bump seed."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "_reserved",
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "WithdrawParams",
+      "docs": [
+        "Parameters for withdrawing from a shield pool."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "nullifier_secret",
+            "docs": [
+              "The nullifier secret (reveals the deposit without linking to depositor)."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "blinding_factor",
+            "docs": [
+              "Blinding factor used in the original commitment."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "leaf_index",
+            "docs": [
+              "Leaf index of the deposit in the Merkle tree."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "merkle_proof",
+            "docs": [
+              "Merkle proof — path from leaf to root (20 sibling hashes)."
+            ],
+            "type": {
+              "array": [
+                {
+                  "array": [
+                    "u8",
+                    32
+                  ]
+                },
+                5
+              ]
+            }
+          },
+          {
+            "name": "proof_root",
+            "docs": [
+              "The Merkle root the proof was computed against.",
+              "Must be a known root (current or recent historical)."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "range_proof",
+            "docs": [
+              "Range proof that the withdrawal amount is valid."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                128
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "WithdrawalExecuted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "recipient",
+            "type": "pubkey"
+          },
+          {
+            "name": "nullifier_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "fee_amount",
+            "type": "u64"
+          },
+          {
+            "name": "net_amount",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    }
+  ]
+}
