@@ -133,3 +133,31 @@ jobs:
           avm install ${{ env.ANCHOR_VERSION }}
           avm use ${{ env.ANCHOR_VERSION }}
       - run: anchor build
+
+  devnet-integration:
+    name: Devnet Integration Test
+    runs-on: ubuntu-latest
+    needs: [typescript-test, anchor-build]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install Solana CLI
+        run: |
+          sh -c "$(curl -sSfL https://release.solana.com/v${{ env.SOLANA_VERSION }}/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+      - name: Configure devnet wallet
+        env:
+          DEVNET_KEYPAIR: ${{ secrets.DEVNET_KEYPAIR }}
+        run: |
+          mkdir -p ~/.config/solana
+          echo "$DEVNET_KEYPAIR" > ~/.config/solana/id.json
+          solana config set --url https://api.devnet.solana.com
+          solana address
+      - name: Install deps
+        working-directory: sdk
+        run: npm ci
+      - name: Run devnet e2e
+        run: npx tsx tests/test-devnet-e2e.ts
