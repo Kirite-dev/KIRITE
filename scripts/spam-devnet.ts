@@ -34,18 +34,23 @@ async function main() {
 
   for (let i = 0; i < N; i++) {
     const label = labels[i % labels.length];
+    // Invoke KIRITE program with a tagged no-op so the tx lands in
+    // the program account's history. skipPreflight lets failed runs commit.
     const tx = new Transaction().add(
       new TransactionInstruction({
-        keys: [
-          { pubkey: wallet.publicKey, isSigner: true, isWritable: true },
-          { pubkey: PROGRAM_ID, isSigner: false, isWritable: false },
-        ],
+        keys: [{ pubkey: wallet.publicKey, isSigner: true, isWritable: true }],
+        programId: PROGRAM_ID,
+        data: Buffer.from(`${label}#${i}`, "utf-8"),
+      }),
+      new TransactionInstruction({
+        keys: [{ pubkey: wallet.publicKey, isSigner: true, isWritable: true }],
         programId: MEMO,
-        data: Buffer.from(`${label} #${i}`, "utf-8"),
+        data: Buffer.from(`${label}#${i}`, "utf-8"),
       }),
     );
     try {
-      const sig = await sendAndConfirmTransaction(conn, tx, [wallet]);
+      const sig = await conn.sendTransaction(tx, [wallet], { skipPreflight: true });
+      await conn.confirmTransaction(sig, "confirmed").catch(() => {});
       console.log(`${i + 1}/${N} ${label} ${sig}`);
     } catch (e: any) {
       console.log(`${i + 1}/${N} failed: ${e.message?.slice(0, 100)}`);
