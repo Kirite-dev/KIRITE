@@ -1,0 +1,10 @@
+# KIRITE Protocol — Code Ownership
+
+* @KIRITE-labs
+
+/programs/      @KIRITE-labs
+/sdk/           @KIRITE-labs
+/cli/           @KIRITE-labs
+/tests/         @KIRITE-labs
+/docs/          @KIRITE-labs
+/.github/       @KIRITE-labs
