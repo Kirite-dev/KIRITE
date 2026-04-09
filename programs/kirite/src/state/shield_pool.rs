@@ -18,20 +18,20 @@ pub struct ShieldPool {
     pub historical_roots: [[u8; 32]; MAX_HISTORICAL_ROOTS], // 96
     pub filled_subtrees: [[u8; 32]; MERKLE_TREE_HEIGHT],    // 160
     // 8-byte aligned fields
-    pub denomination: u64,                                  // 8
-    pub total_deposits: u64,                                // 8
-    pub total_withdrawals: u64,                             // 8
-    pub fees_collected: u64,                                // 8
-    pub timelock_seconds: i64,                              // 8
-    pub created_at: i64,                                    // 8
+    pub denomination: u64,      // 8
+    pub total_deposits: u64,    // 8
+    pub total_withdrawals: u64, // 8
+    pub fees_collected: u64,    // 8
+    pub timelock_seconds: i64,  // 8
+    pub created_at: i64,        // 8
     // 4-byte aligned
-    pub next_leaf_index: u32,                               // 4
+    pub next_leaf_index: u32, // 4
     // 1-byte fields grouped
-    pub root_history_index: u8,                             // 1
-    pub is_frozen: u8,                                      // 1
-    pub bump: u8,                                           // 1
-    pub vault_authority_bump: u8,                           // 1
-    // total should be aligned (no padding needed)
+    pub root_history_index: u8, // 1
+    pub is_frozen: u8,          // 1
+    pub bump: u8,               // 1
+    pub vault_authority_bump: u8, // 1
+                                // total should be aligned (no padding needed)
 }
 
 impl ShieldPool {

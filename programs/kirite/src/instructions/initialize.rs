@@ -5,7 +5,9 @@ use crate::events::{ProtocolInitialized, ProtocolPaused, ProtocolResumed, Shield
 use crate::state::protocol::{GovernanceState, ProtocolConfig};
 use crate::state::shield_pool::{NullifierSet, PoolConfig, ShieldPool, NULLIFIER_BITFIELD_BYTES};
 use crate::utils::crypto::compute_zero_hashes;
-use crate::utils::validation::{validate_denomination, validate_fee_bps, validate_timelock_duration};
+use crate::utils::validation::{
+    validate_denomination, validate_fee_bps, validate_timelock_duration,
+};
 
 // ============================================================================
 // Initialize Protocol

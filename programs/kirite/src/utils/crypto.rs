@@ -177,7 +177,10 @@ pub fn insert_leaf_light(
 
 pub fn verify_range_proof(proof: &[u8]) -> Result<()> {
     require!(!proof.is_empty(), KiriteError::InvalidAmountProof);
-    require!(proof.iter().any(|&b| b != 0), KiriteError::InvalidAmountProof);
+    require!(
+        proof.iter().any(|&b| b != 0),
+        KiriteError::InvalidAmountProof
+    );
     Ok(())
 }
 
@@ -241,7 +244,8 @@ pub fn verify_withdrawal_proof(
     proof: &[[u8; 32]; MERKLE_TREE_HEIGHT],
     root: &[u8; 32],
 ) -> bool {
-    let commitment = compute_commitment(nullifier_secret, denomination, blinding_factor, leaf_index);
+    let commitment =
+        compute_commitment(nullifier_secret, denomination, blinding_factor, leaf_index);
     let mut current = commitment;
     let mut idx = leaf_index;
 

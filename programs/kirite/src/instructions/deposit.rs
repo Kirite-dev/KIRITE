@@ -6,8 +6,7 @@ use crate::events::DepositCommitted;
 use crate::state::protocol::ProtocolConfig;
 use crate::state::shield_pool::{PoolEntry, ShieldPool};
 use crate::utils::crypto::{
-    compute_commitment, insert_leaf_light,
-    ELGAMAL_CIPHERTEXT_LEN, MERKLE_TREE_HEIGHT,
+    compute_commitment, insert_leaf_light, ELGAMAL_CIPHERTEXT_LEN, MERKLE_TREE_HEIGHT,
 };
 use crate::utils::validation::require_nonzero_bytes;
 
@@ -84,7 +83,11 @@ fn do_token_transfer<'info>(
 ) -> Result<()> {
     let transfer_ctx = CpiContext::new(
         token_program,
-        Transfer { from, to, authority },
+        Transfer {
+            from,
+            to,
+            authority,
+        },
     );
     token::transfer(transfer_ctx, amount)
 }
@@ -99,7 +102,10 @@ fn verify_commitment(
     claimed_commitment: &[u8; 32],
 ) -> Result<()> {
     let expected = compute_commitment(nullifier_secret, denomination, blinding_factor, leaf_index);
-    require!(expected == *claimed_commitment, KiriteError::InvalidAmountProof);
+    require!(
+        expected == *claimed_commitment,
+        KiriteError::InvalidAmountProof
+    );
     Ok(())
 }
 

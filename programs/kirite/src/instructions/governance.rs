@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{self, Token, TokenAccount, Burn};
+use anchor_spl::token::{self, Burn, Token, TokenAccount};
 
 use crate::errors::KiriteError;
 use crate::events::{
@@ -8,7 +8,7 @@ use crate::events::{
 use crate::state::protocol::{FeeProposal, GovernanceState, ProtocolConfig};
 use crate::state::shield_pool::ShieldPool;
 use crate::utils::validation::{
-    validate_fee_bps, validate_freeze_reason, require_governance_timelock_elapsed,
+    require_governance_timelock_elapsed, validate_fee_bps, validate_freeze_reason,
     GOVERNANCE_TIMELOCK_SECONDS,
 };
 
@@ -173,7 +173,10 @@ pub fn handle_cancel_fee_proposal(ctx: Context<CancelFeeProposal>) -> Result<()>
     let proposal = &mut ctx.accounts.fee_proposal;
     proposal.cancelled = true;
 
-    msg!("KIRITE: fee proposal cancelled | proposer={}", proposal.proposer);
+    msg!(
+        "KIRITE: fee proposal cancelled | proposer={}",
+        proposal.proposer
+    );
 
     Ok(())
 }
@@ -274,9 +277,7 @@ pub struct InitiateAuthorityTransfer<'info> {
     pub authority: Signer<'info>,
 }
 
-pub fn handle_initiate_authority_transfer(
-    ctx: Context<InitiateAuthorityTransfer>,
-) -> Result<()> {
+pub fn handle_initiate_authority_transfer(ctx: Context<InitiateAuthorityTransfer>) -> Result<()> {
     let config = &mut ctx.accounts.protocol_config;
     config.pending_authority = ctx.accounts.new_authority.key();
 
@@ -302,9 +303,7 @@ pub struct AcceptAuthorityTransfer<'info> {
     pub new_authority: Signer<'info>,
 }
 
-pub fn handle_accept_authority_transfer(
-    ctx: Context<AcceptAuthorityTransfer>,
-) -> Result<()> {
+pub fn handle_accept_authority_transfer(ctx: Context<AcceptAuthorityTransfer>) -> Result<()> {
     let config = &mut ctx.accounts.protocol_config;
     let old = config.authority;
     config.authority = ctx.accounts.new_authority.key();
@@ -377,7 +376,11 @@ pub fn handle_freeze_pool(ctx: Context<FreezePool>, reason: String) -> Result<()
         timestamp: clock.unix_timestamp,
     });
 
-    msg!("KIRITE: pool frozen | pool={} reason={}", ctx.accounts.shield_pool.key(), reason);
+    msg!(
+        "KIRITE: pool frozen | pool={} reason={}",
+        ctx.accounts.shield_pool.key(),
+        reason
+    );
 
     Ok(())
 }
@@ -404,7 +407,10 @@ pub fn handle_unfreeze_pool(ctx: Context<FreezePool>) -> Result<()> {
     pool.is_frozen = 0;
     drop(pool);
 
-    msg!("KIRITE: pool unfrozen | pool={}", ctx.accounts.shield_pool.key());
+    msg!(
+        "KIRITE: pool unfrozen | pool={}",
+        ctx.accounts.shield_pool.key()
+    );
 
     Ok(())
 }
@@ -477,7 +483,11 @@ pub fn handle_burn_fees(ctx: Context<BurnFees>, amount: u64) -> Result<()> {
         timestamp: clock.unix_timestamp,
     });
 
-    msg!("KIRITE: fees burned | mint={} amount={}", ctx.accounts.mint.key(), amount);
+    msg!(
+        "KIRITE: fees burned | mint={} amount={}",
+        ctx.accounts.mint.key(),
+        amount
+    );
 
     Ok(())
 }

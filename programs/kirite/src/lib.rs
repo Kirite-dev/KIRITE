@@ -6,12 +6,12 @@ pub mod instructions;
 pub mod state;
 pub mod utils;
 
-use instructions::initialize::*;
-use instructions::deposit::*;
-use instructions::withdraw::*;
-use instructions::transfer::*;
 use instructions::create_stealth::*;
+use instructions::deposit::*;
 use instructions::governance::*;
+use instructions::initialize::*;
+use instructions::transfer::*;
+use instructions::withdraw::*;
 use state::shield_pool::PoolConfig;
 use state::stealth::{CreateStealthParams, ResolveStealthParams};
 
@@ -164,9 +164,7 @@ pub mod kirite {
 
     /// Deactivate a stealth registry. No new stealth addresses can be
     /// derived after deactivation, but existing addresses remain valid.
-    pub fn deactivate_stealth_registry(
-        ctx: Context<DeactivateStealthRegistry>,
-    ) -> Result<()> {
+    pub fn deactivate_stealth_registry(ctx: Context<DeactivateStealthRegistry>) -> Result<()> {
         handle_deactivate_stealth_registry(ctx)
     }
 
@@ -230,16 +228,12 @@ pub mod kirite {
     }
 
     /// Initiate a two-step authority transfer.
-    pub fn initiate_authority_transfer(
-        ctx: Context<InitiateAuthorityTransfer>,
-    ) -> Result<()> {
+    pub fn initiate_authority_transfer(ctx: Context<InitiateAuthorityTransfer>) -> Result<()> {
         handle_initiate_authority_transfer(ctx)
     }
 
     /// Accept a pending authority transfer.
-    pub fn accept_authority_transfer(
-        ctx: Context<AcceptAuthorityTransfer>,
-    ) -> Result<()> {
+    pub fn accept_authority_transfer(ctx: Context<AcceptAuthorityTransfer>) -> Result<()> {
         handle_accept_authority_transfer(ctx)
     }
 

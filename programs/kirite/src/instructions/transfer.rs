@@ -230,7 +230,11 @@ pub fn handle_confidential_transfer(
     // --- 3. Verify equality proof (same amount under two keys) ---
     // In production this would be a CPI to a ZK verifier program.
     // Here we verify structural validity of the proof data.
-    verify_equality_proof(&params.equality_proof, &params.sender_ciphertext, &params.recipient_ciphertext)?;
+    verify_equality_proof(
+        &params.equality_proof,
+        &params.sender_ciphertext,
+        &params.recipient_ciphertext,
+    )?;
 
     // --- 4. Check recipient pending capacity ---
     let recipient = &ctx.accounts.recipient_account;
@@ -296,10 +300,7 @@ pub fn handle_apply_pending_balance(
     let account = &mut ctx.accounts.confidential_account;
 
     // Prevent replay: nonce must match
-    require!(
-        account.nonce == expected_nonce,
-        KiriteError::NonceReused
-    );
+    require!(account.nonce == expected_nonce, KiriteError::NonceReused);
 
     account.apply_pending();
     account.last_activity = Clock::get()?.unix_timestamp;
@@ -334,15 +335,13 @@ fn verify_equality_proof(
 ) -> Result<()> {
     // Structural check: all four 32-byte segments must be non-zero
     for chunk_start in (0..128).step_by(32) {
-        let all_zero = proof[chunk_start..chunk_start + 32]
-            .iter()
-            .all(|&b| b == 0);
+        let all_zero = proof[chunk_start..chunk_start + 32].iter().all(|&b| b == 0);
         require!(!all_zero, KiriteError::InvalidAmountProof);
     }
 
     // Fiat-Shamir challenge = H(R1 || R2 || ct_sender || ct_recipient)
     let mut transcript = Vec::with_capacity(64 + 64 + 64);
-    transcript.extend_from_slice(&proof[..64]);     // R1 || R2
+    transcript.extend_from_slice(&proof[..64]); // R1 || R2
     transcript.extend_from_slice(ct_sender);
     transcript.extend_from_slice(ct_recipient);
     let challenge = solana_program::keccak::hash(&transcript).to_bytes();

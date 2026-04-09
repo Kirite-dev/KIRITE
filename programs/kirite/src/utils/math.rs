@@ -120,17 +120,20 @@ pub fn nullifier_bit_mask(leaf_index: u32) -> u8 {
 
 /// Checked addition with custom error.
 pub fn safe_add(a: u64, b: u64) -> Result<u64> {
-    a.checked_add(b).ok_or_else(|| error!(KiriteError::MathOverflow))
+    a.checked_add(b)
+        .ok_or_else(|| error!(KiriteError::MathOverflow))
 }
 
 /// Checked subtraction with custom error.
 pub fn safe_sub(a: u64, b: u64) -> Result<u64> {
-    a.checked_sub(b).ok_or_else(|| error!(KiriteError::MathOverflow))
+    a.checked_sub(b)
+        .ok_or_else(|| error!(KiriteError::MathOverflow))
 }
 
 /// Checked multiplication with custom error.
 pub fn safe_mul(a: u64, b: u64) -> Result<u64> {
-    a.checked_mul(b).ok_or_else(|| error!(KiriteError::MathOverflow))
+    a.checked_mul(b)
+        .ok_or_else(|| error!(KiriteError::MathOverflow))
 }
 
 /// Checked division with custom error (returns DivisionByZero for b == 0).
@@ -159,10 +162,7 @@ pub fn lerp_bps(a: u64, b: u64, t_bps: u16) -> Result<u64> {
     } else {
         a128 - b128
     };
-    let scaled = diff
-        .checked_mul(t128)
-        .ok_or(KiriteError::MathOverflow)?
-        / BPS_DENOMINATOR as u128;
+    let scaled = diff.checked_mul(t128).ok_or(KiriteError::MathOverflow)? / BPS_DENOMINATOR as u128;
 
     let result = if b128 >= a128 {
         a128 + scaled

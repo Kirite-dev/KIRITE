@@ -48,10 +48,7 @@ pub fn require_authority(config: &ProtocolConfig, signer: &Pubkey) -> Result<()>
 
 /// Ensure a mint is in the supported mints list.
 pub fn require_supported_mint(config: &ProtocolConfig, mint: &Pubkey) -> Result<()> {
-    let found = config
-        .supported_mints
-        .iter()
-        .any(|m| m == mint);
+    let found = config.supported_mints.iter().any(|m| m == mint);
     require!(found, KiriteError::UnsupportedMint);
     Ok(())
 }

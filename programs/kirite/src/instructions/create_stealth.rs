@@ -7,8 +7,7 @@ use crate::state::stealth::{
     CreateStealthParams, EphemeralKeyRecord, ResolveStealthParams, StealthAddress, StealthRegistry,
 };
 use crate::utils::crypto::{
-    compute_ephemeral_pubkey, derive_stealth_pubkey, validate_elgamal_pubkey,
-    validate_ciphertext,
+    compute_ephemeral_pubkey, derive_stealth_pubkey, validate_ciphertext, validate_elgamal_pubkey,
 };
 use crate::utils::validation::require_nonzero_bytes;
 
@@ -101,9 +100,7 @@ pub struct DeactivateStealthRegistry<'info> {
     pub owner: Signer<'info>,
 }
 
-pub fn handle_deactivate_stealth_registry(
-    ctx: Context<DeactivateStealthRegistry>,
-) -> Result<()> {
+pub fn handle_deactivate_stealth_registry(ctx: Context<DeactivateStealthRegistry>) -> Result<()> {
     let registry = &mut ctx.accounts.registry;
     registry.is_active = false;
 
@@ -309,7 +306,10 @@ pub fn handle_claim_stealth_address(
     // In production, distance must be exactly 0 (perfect match).
     // For testnet we allow non-zero but log a warning.
     if distance != 0 {
-        msg!("WARN: spend proof tag distance={} — full verifier required for mainnet", distance);
+        msg!(
+            "WARN: spend proof tag distance={} — full verifier required for mainnet",
+            distance
+        );
     }
 
     let clock = Clock::get()?;

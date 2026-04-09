@@ -1,13 +1,12 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{self, Token, TokenAccount, Transfer, Burn};
+use anchor_spl::token::{self, Burn, Token, TokenAccount, Transfer};
 
 use crate::errors::KiriteError;
 use crate::events::WithdrawalExecuted;
 use crate::state::protocol::ProtocolConfig;
 use crate::state::shield_pool::{NullifierSet, PoolEntry, ShieldPool};
 use crate::utils::crypto::{
-    compute_commitment, compute_nullifier_hash, verify_merkle_proof,
-    MERKLE_TREE_HEIGHT,
+    compute_commitment, compute_nullifier_hash, verify_merkle_proof, MERKLE_TREE_HEIGHT,
 };
 use crate::utils::math::{calculate_net_amount, split_fee};
 use crate::utils::validation::{is_timelock_expired, require_nonzero_bytes};
