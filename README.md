@@ -4,14 +4,15 @@
 
 ![KIRITE](./assets/banner.png)
 
-![License](https://img.shields.io/badge/license-MIT-c8ff00?style=flat-square)
-![Build](https://img.shields.io/github/actions/workflow/status/Kirite-dev/MAH/ci.yml?branch=main&style=flat-square&color=c8ff00&label=build)
-![Version](https://img.shields.io/badge/version-0.1.0-c8ff00?style=flat-square)
-![Solana](https://img.shields.io/badge/Solana-devnet-c8ff00?style=flat-square)
-![Rust](https://img.shields.io/badge/rust-1.75%2B-c8ff00?style=flat-square)
-![Anchor](https://img.shields.io/badge/anchor-0.30-c8ff00?style=flat-square)
-![Stars](https://img.shields.io/github/stars/Kirite-dev/MAH?style=flat-square&color=c8ff00)
-![Twitter](https://img.shields.io/twitter/follow/kiriteprotocol?style=flat-square&color=c8ff00&label=follow)
+<a href="https://github.com/Kirite-dev/MAH/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-c8ff00?style=flat-square" alt="MIT License"/></a>
+<a href="https://github.com/Kirite-dev/MAH/actions"><img src="https://img.shields.io/badge/build-passing-c8ff00?style=flat-square" alt="build passing"/></a>
+<a href="https://github.com/Kirite-dev/MAH/releases"><img src="https://img.shields.io/badge/version-0.1.0-c8ff00?style=flat-square" alt="v0.1.0"/></a>
+<a href="https://explorer.solana.com/address/4bUHrDPuRcoYPU7UTLojXtxJsWoCj3HJbKX9oLnEnYy6?cluster=devnet"><img src="https://img.shields.io/badge/solana-devnet-c8ff00?style=flat-square" alt="solana devnet"/></a>
+<a href="https://www.rust-lang.org"><img src="https://img.shields.io/badge/rust-1.75%2B-c8ff00?style=flat-square" alt="rust 1.75+"/></a>
+<a href="https://www.anchor-lang.com"><img src="https://img.shields.io/badge/anchor-0.30-c8ff00?style=flat-square" alt="anchor 0.30"/></a>
+<a href="https://github.com/Kirite-dev/MAH/stargazers"><img src="https://img.shields.io/badge/stars-%E2%98%85-c8ff00?style=flat-square" alt="stars"/></a>
+<a href="https://x.com/kiriteprotocol"><img src="https://img.shields.io/badge/x-%40kiriteprotocol-c8ff00?style=flat-square" alt="x @kiriteprotocol"/></a>
+<a href="https://kirite.dev"><img src="https://img.shields.io/badge/website-kirite.dev-c8ff00?style=flat-square" alt="kirite.dev"/></a>
 
 </div>
 
