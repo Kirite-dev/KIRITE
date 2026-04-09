@@ -15,7 +15,7 @@
     "@solana/web3.js": "^1.87.0",
     "bn.js": "^5.2.1",
     "tweetnacl": "^1.0.3",
-    "bs58": "^5.0.0"
+    "bs58": "^6.0.0"
   },
   "devDependencies": {
     "typescript": "^5.3.0",
