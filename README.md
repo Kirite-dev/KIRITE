@@ -1,5 +1,7 @@
 <div align="center">
 
+> [English](README.md) · [日本語](README.ja.md)
+
 ![KIRITE](./assets/banner.png)
 
 ![License](https://img.shields.io/badge/license-MIT-c8ff00?style=flat-square)
