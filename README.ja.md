@@ -8,9 +8,9 @@
 
 **Solana 向けプライバシーレイヤー**
 
-<a href="https://github.com/KIRITE-labs/kirite-protocol/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-c8ff00?style=flat-square" alt="MIT License"/></a>
-<a href="https://github.com/KIRITE-labs/kirite-protocol/actions"><img src="https://img.shields.io/badge/build-passing-c8ff00?style=flat-square" alt="build"/></a>
-<a href="https://github.com/KIRITE-labs/kirite-protocol/releases"><img src="https://img.shields.io/badge/version-v0.1.0-c8ff00?style=flat-square" alt="version"/></a>
+<a href="https://github.com/Kirite-dev/MAH/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-c8ff00?style=flat-square" alt="MIT License"/></a>
+<a href="https://github.com/Kirite-dev/MAH/actions"><img src="https://img.shields.io/badge/build-passing-c8ff00?style=flat-square" alt="build"/></a>
+<a href="https://github.com/Kirite-dev/MAH/releases"><img src="https://img.shields.io/badge/version-v0.1.0-c8ff00?style=flat-square" alt="version"/></a>
 <a href="https://x.com/kiriteprotocol"><img src="https://img.shields.io/badge/x-@kiriteprotocol-c8ff00?style=flat-square" alt="x"/></a>
 <a href="https://kirite-web.vercel.app"><img src="https://img.shields.io/badge/website-kirite--web.vercel.app-c8ff00?style=flat-square" alt="website"/></a>
 
@@ -31,8 +31,8 @@ KIRITE は Solana 向けのプライバシー決済レイヤーで、取引額�
 ## ビルド
 
 ```bash
-git clone https://github.com/KIRITE-labs/kirite-protocol.git
-cd kirite-protocol
+git clone https://github.com/Kirite-dev/MAH.git
+cd MAH
 anchor build
 ```
 
@@ -54,7 +54,7 @@ anchor build
 
 - Website: https://kirite-web.vercel.app
 - X: @kiriteprotocol
-- GitHub: KIRITE-labs/kirite-protocol
+- GitHub: Kirite-dev/MAH
 - Ticker: $KIRITE
 
 ## ライセンス

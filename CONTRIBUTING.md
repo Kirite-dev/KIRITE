@@ -23,7 +23,7 @@ Thank you for your interest in contributing to the KIRITE privacy protocol. This
 ### Clone and Build
 
 ```bash
-git clone https://github.com/kirite-protocol/kirite.git
+git clone https://github.com/MAH/kirite.git
 cd kirite
 ```
 

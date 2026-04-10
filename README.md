@@ -5,12 +5,12 @@
 ![KIRITE](./assets/banner.png)
 
 ![License](https://img.shields.io/badge/license-MIT-c8ff00?style=flat-square)
-![Build](https://img.shields.io/github/actions/workflow/status/KIRITE-labs/kirite-protocol/ci.yml?branch=main&style=flat-square&color=c8ff00&label=build)
+![Build](https://img.shields.io/github/actions/workflow/status/Kirite-dev/MAH/ci.yml?branch=main&style=flat-square&color=c8ff00&label=build)
 ![Version](https://img.shields.io/badge/version-0.1.0-c8ff00?style=flat-square)
 ![Solana](https://img.shields.io/badge/Solana-devnet-c8ff00?style=flat-square)
 ![Rust](https://img.shields.io/badge/rust-1.75%2B-c8ff00?style=flat-square)
 ![Anchor](https://img.shields.io/badge/anchor-0.30-c8ff00?style=flat-square)
-![Stars](https://img.shields.io/github/stars/KIRITE-labs/kirite-protocol?style=flat-square&color=c8ff00)
+![Stars](https://img.shields.io/github/stars/Kirite-dev/MAH?style=flat-square&color=c8ff00)
 ![Twitter](https://img.shields.io/twitter/follow/kiriteprotocol?style=flat-square&color=c8ff00&label=follow)
 
 </div>
@@ -71,8 +71,8 @@ The protocol is composed of three independent layers. Each one removes a differe
 Requires `solana-cli >= 1.18`, `anchor >= 0.30`, `rust >= 1.75`, `node >= 20`.
 
 ```bash
-git clone https://github.com/KIRITE-labs/kirite-protocol.git
-cd kirite-protocol
+git clone https://github.com/Kirite-dev/MAH.git
+cd MAH
 
 # build the on-chain program
 anchor build
@@ -178,7 +178,7 @@ kirite stealth scan --view-key ./keys/view.json
 ## Project Structure
 
 ```
-kirite-protocol/
+MAH/
 ├── programs/
 │   └── kirite/
 │       └── src/
@@ -297,5 +297,5 @@ Verify the devnet deployment on [Solana Explorer](https://explorer.solana.com/ad
 
 - Website: https://kirite-web.vercel.app
 - X: https://x.com/kiriteprotocol
-- GitHub: https://github.com/KIRITE-labs/kirite-protocol
+- GitHub: https://github.com/Kirite-dev/MAH
 - Ticker: $KIRITE
