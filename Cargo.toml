@@ -1,11 +1,38 @@
 [workspace]
-members = [
-    "programs/*"
-]
+members = ["programs/*"]
+resolver = "2"
+
+[workspace.package]
+version = "0.4.1"
+edition = "2021"
+authors = ["KIRITE core"]
+license = "BUSL-1.1"
+repository = "https://github.com/Kirite-dev/KIRITE-layer"
+homepage = "https://kirite.dev"
+readme = "README.md"
+rust-version = "1.78"
+description = "KIRITE — native privacy layer for Solana. Confidential transfers, shield pools, stealth addresses."
+keywords = ["solana", "anchor", "privacy", "confidential-transfer", "web3"]
+categories = ["cryptography", "network-programming"]
+
+[workspace.dependencies]
+anchor-lang = "0.30.1"
+anchor-spl = "0.30.1"
+solana-program = "=1.18.26"
+borsh = "1.5"
+bytemuck = { version = "1.14", features = ["derive"] }
+bs58 = "0.5"
+thiserror = "1.0"
 
 [profile.release]
 overflow-checks = true
 lto = "fat"
+codegen-units = 1
+opt-level = 3
+
+[profile.release.build-override]
+opt-level = 3
+incremental = false
 codegen-units = 1
 
 [profile.dev]

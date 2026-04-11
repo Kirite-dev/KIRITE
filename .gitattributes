@@ -1,0 +1,28 @@
+* text=auto eol=lf
+
+*.rs text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+*.md text eol=lf
+*.sh text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.so binary
+*.wasm binary
+
+*.ts linguist-language=TypeScript
+*.tsx linguist-language=TypeScript
+*.rs linguist-language=Rust
+docs/* linguist-documentation
+tests/fixtures/* linguist-generated
+idl/*.json linguist-generated
+programs/kirite/idl/*.json linguist-generated
+sdk/dist/* linguist-generated
