@@ -9,7 +9,6 @@ use crate::utils::validation::{
     validate_denomination, validate_fee_bps, validate_timelock_duration,
 };
 
-
 #[derive(Accounts)]
 pub struct InitializeProtocol<'info> {
     #[account(
@@ -86,7 +85,6 @@ pub fn handle_initialize_protocol(
 
     Ok(())
 }
-
 
 #[derive(Accounts)]
 #[instruction(config: PoolConfig)]
@@ -187,7 +185,6 @@ pub fn handle_initialize_shield_pool(
 
     Ok(())
 }
-
 
 #[derive(Accounts)]
 pub struct PauseProtocol<'info> {

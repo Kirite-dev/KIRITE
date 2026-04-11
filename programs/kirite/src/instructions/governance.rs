@@ -12,7 +12,6 @@ use crate::utils::validation::{
     GOVERNANCE_TIMELOCK_SECONDS,
 };
 
-
 #[derive(Accounts)]
 pub struct ProposeFeeUpdate<'info> {
     #[account(
@@ -81,7 +80,6 @@ pub fn handle_propose_fee_update(
     Ok(())
 }
 
-
 #[derive(Accounts)]
 pub struct ExecuteFeeUpdate<'info> {
     #[account(
@@ -145,7 +143,6 @@ pub fn handle_execute_fee_update(ctx: Context<ExecuteFeeUpdate>) -> Result<()> {
     Ok(())
 }
 
-
 #[derive(Accounts)]
 pub struct CancelFeeProposal<'info> {
     #[account(
@@ -170,7 +167,6 @@ pub fn handle_cancel_fee_proposal(ctx: Context<CancelFeeProposal>) -> Result<()>
 
     Ok(())
 }
-
 
 #[derive(Accounts)]
 pub struct AddSupportedMint<'info> {
@@ -206,7 +202,6 @@ pub fn handle_add_supported_mint(ctx: Context<AddSupportedMint>) -> Result<()> {
     Ok(())
 }
 
-
 #[derive(Accounts)]
 pub struct RemoveSupportedMint<'info> {
     #[account(
@@ -240,7 +235,6 @@ pub fn handle_remove_supported_mint(ctx: Context<RemoveSupportedMint>) -> Result
 
     Ok(())
 }
-
 
 #[derive(Accounts)]
 pub struct InitiateAuthorityTransfer<'info> {
@@ -305,7 +299,6 @@ pub fn handle_accept_authority_transfer(ctx: Context<AcceptAuthorityTransfer>) -
 
     Ok(())
 }
-
 
 #[derive(Accounts)]
 pub struct FreezePool<'info> {
@@ -391,7 +384,6 @@ pub fn handle_unfreeze_pool(ctx: Context<FreezePool>) -> Result<()> {
     Ok(())
 }
 
-
 #[derive(Accounts)]
 pub struct BurnFees<'info> {
     #[account(
@@ -461,7 +453,6 @@ pub fn handle_burn_fees(ctx: Context<BurnFees>, amount: u64) -> Result<()> {
 
     Ok(())
 }
-
 
 #[derive(Accounts)]
 pub struct UpdateGovernanceSigners<'info> {

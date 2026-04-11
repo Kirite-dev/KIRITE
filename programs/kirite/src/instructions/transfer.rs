@@ -296,15 +296,16 @@ fn verify_equality_proof(
     );
 
     // Birthday-bound sanity: H(s1||s2)[0..8] must differ from challenge[0..8]
-    let response_hash = solana_program::keccak::hash(
-        &[s1, s2].concat()
-    ).to_bytes();
+    let response_hash = solana_program::keccak::hash(&[s1, s2].concat()).to_bytes();
     let collision = response_hash[..8] == challenge[..8];
     require!(!collision, KiriteError::InvalidAmountProof);
 
     msg!(
         "KIRITE: equality proof verified | c={:02x}{:02x} s1={:02x}{:02x}",
-        challenge[0], challenge[1], s1[0], s1[1]
+        challenge[0],
+        challenge[1],
+        s1[0],
+        s1[1]
     );
 
     Ok(())
