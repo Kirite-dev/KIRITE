@@ -4,13 +4,13 @@
 
 ![KIRITE](./assets/banner.png)
 
-<a href="https://github.com/Kirite-dev/KIRITE/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="MIT License"/></a>
-<a href="https://github.com/Kirite-dev/KIRITE/actions"><img src="https://img.shields.io/badge/build-passing-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="build passing"/></a>
-<a href="https://github.com/Kirite-dev/KIRITE/releases"><img src="https://img.shields.io/badge/version-0.1.0-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="v0.1.0"/></a>
+<a href="https://github.com/Kirite-dev/KIRITE-layer/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="MIT License"/></a>
+<a href="https://github.com/Kirite-dev/KIRITE-layer/actions"><img src="https://img.shields.io/badge/build-passing-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="build passing"/></a>
+<a href="https://github.com/Kirite-dev/KIRITE-layer/releases"><img src="https://img.shields.io/badge/version-0.1.0-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="v0.1.0"/></a>
 <a href="https://explorer.solana.com/address/4bUHrDPuRcoYPU7UTLojXtxJsWoCj3HJbKX9oLnEnYy6?cluster=devnet"><img src="https://img.shields.io/badge/solana-devnet-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="solana devnet"/></a>
 <a href="https://www.rust-lang.org"><img src="https://img.shields.io/badge/rust-1.75%2B-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="rust 1.75+"/></a>
 <a href="https://www.anchor-lang.com"><img src="https://img.shields.io/badge/anchor-0.30-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="anchor 0.30"/></a>
-<a href="https://github.com/Kirite-dev/KIRITE/stargazers"><img src="https://img.shields.io/badge/stars-%E2%98%85-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="stars"/></a>
+<a href="https://github.com/Kirite-dev/KIRITE-layer/stargazers"><img src="https://img.shields.io/badge/stars-%E2%98%85-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="stars"/></a>
 <a href="https://x.com/KiriteDev"><img src="https://img.shields.io/badge/x-%40KiriteDev-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="x @KiriteDev"/></a>
 <a href="https://kirite.dev"><img src="https://img.shields.io/badge/website-kirite.dev-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="kirite.dev"/></a>
 
@@ -72,8 +72,8 @@ The protocol is composed of three independent layers. Each one removes a differe
 Requires `solana-cli >= 1.18`, `anchor >= 0.30`, `rust >= 1.75`, `node >= 20`.
 
 ```bash
-git clone https://github.com/Kirite-dev/KIRITE.git
-cd KIRITE
+git clone https://github.com/Kirite-dev/KIRITE-layer.git
+cd KIRITE-layer
 
 # build the on-chain program
 anchor build
@@ -299,5 +299,5 @@ Verify the devnet deployment on [Solana Explorer](https://explorer.solana.com/ad
 - Website: https://kirite.dev
 - Docs: https://kirite.dev/docs
 - X: https://x.com/KiriteDev
-- GitHub: https://github.com/Kirite-dev/KIRITE
+- GitHub: https://github.com/Kirite-dev/KIRITE-layer
 - Ticker: $KIRITE
