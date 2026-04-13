@@ -4,10 +4,9 @@ use crate::errors::KiriteError;
 use crate::events::{ConfidentialAccountCreated, ConfidentialTransferExecuted};
 use crate::state::protocol::ProtocolConfig;
 use crate::utils::crypto::{
-    encrypted_zero, validate_ciphertext, validate_elgamal_pubkey, verify_range_proof,
-    ELGAMAL_CIPHERTEXT_LEN,
+    ciphertext_add, ciphertext_sub, encrypted_zero, validate_ciphertext, validate_elgamal_pubkey,
+    verify_equality_proof, verify_range_proof, ELGAMAL_CIPHERTEXT_LEN,
 };
-use crate::utils::math::calculate_fee;
 use crate::utils::validation::require_nonzero_bytes;
 
 #[account]
@@ -16,7 +15,8 @@ pub struct ConfidentialAccount {
     pub mint: Pubkey,
     pub elgamal_pubkey: [u8; 32],
 
-    /// Homomorphic balance: new_balance = old_balance XOR delta_ciphertext.
+    /// Twisted ElGamal ciphertext: (Pedersen commitment C, decryption handle D).
+    /// Updated via homomorphic EC point addition/subtraction.
     pub encrypted_balance: [u8; ELGAMAL_CIPHERTEXT_LEN],
 
     pub pending_balance: [u8; ELGAMAL_CIPHERTEXT_LEN],
@@ -32,27 +32,28 @@ impl ConfidentialAccount {
     pub const SPACE: usize = 8 + 32 + 32 + 32 + 64 + 64 + 4 + 4 + 1 + 8 + 8 + 1;
     pub const DEFAULT_MAX_PENDING: u32 = 64;
 
-    /// XOR stand-in for EC point addition (no on-chain precompile yet).
-    pub fn add_to_pending(&mut self, delta: &[u8; ELGAMAL_CIPHERTEXT_LEN]) {
-        for i in 0..ELGAMAL_CIPHERTEXT_LEN {
-            self.pending_balance[i] ^= delta[i];
-        }
+    /// Homomorphic addition on the Ristretto group:
+    /// pending_balance = pending_balance + delta (EC point-wise).
+    pub fn add_to_pending(&mut self, delta: &[u8; ELGAMAL_CIPHERTEXT_LEN]) -> Result<()> {
+        self.pending_balance = ciphertext_add(&self.pending_balance, delta)?;
         self.pending_count += 1;
+        Ok(())
     }
 
-    pub fn apply_pending(&mut self) {
-        for i in 0..ELGAMAL_CIPHERTEXT_LEN {
-            self.encrypted_balance[i] ^= self.pending_balance[i];
-        }
+    /// Merge pending into main balance via EC point addition.
+    pub fn apply_pending(&mut self) -> Result<()> {
+        self.encrypted_balance = ciphertext_add(&self.encrypted_balance, &self.pending_balance)?;
         self.pending_balance = encrypted_zero();
         self.pending_count = 0;
         self.nonce += 1;
+        Ok(())
     }
 
-    pub fn subtract_from_balance(&mut self, delta: &[u8; ELGAMAL_CIPHERTEXT_LEN]) {
-        for i in 0..ELGAMAL_CIPHERTEXT_LEN {
-            self.encrypted_balance[i] ^= delta[i];
-        }
+    /// Homomorphic subtraction on the Ristretto group:
+    /// balance = balance - delta (EC point-wise).
+    pub fn subtract_from_balance(&mut self, delta: &[u8; ELGAMAL_CIPHERTEXT_LEN]) -> Result<()> {
+        self.encrypted_balance = ciphertext_sub(&self.encrypted_balance, delta)?;
+        Ok(())
     }
 }
 
@@ -122,9 +123,9 @@ pub struct ConfidentialTransferParams {
     pub sender_ciphertext: [u8; ELGAMAL_CIPHERTEXT_LEN],
     pub recipient_ciphertext: [u8; ELGAMAL_CIPHERTEXT_LEN],
     pub fee_ciphertext: [u8; ELGAMAL_CIPHERTEXT_LEN],
-    /// Range proof: amount in [0, 2^64), sender balance stays non-negative.
+    /// Bulletproofs-style range proof: amount in [0, 2^64).
     pub range_proof: [u8; 128],
-    /// Sigma equality proof: both ciphertexts encrypt the same plaintext.
+    /// Schnorr sigma equality proof: both ciphertexts encrypt the same value.
     pub equality_proof: [u8; 128],
 }
 
@@ -176,7 +177,6 @@ pub fn handle_confidential_transfer(
 
     verify_range_proof(&params.range_proof)?;
 
-    // Production: CPI to ZK verifier. Devnet: structural check.
     verify_equality_proof(
         &params.equality_proof,
         &params.sender_ciphertext,
@@ -190,11 +190,11 @@ pub fn handle_confidential_transfer(
     );
 
     let sender = &mut ctx.accounts.sender_account;
-    sender.subtract_from_balance(&params.sender_ciphertext);
+    sender.subtract_from_balance(&params.sender_ciphertext)?;
     sender.last_activity = Clock::get()?.unix_timestamp;
 
     let recipient_mut = &mut ctx.accounts.recipient_account;
-    recipient_mut.add_to_pending(&params.recipient_ciphertext);
+    recipient_mut.add_to_pending(&params.recipient_ciphertext)?;
     recipient_mut.last_activity = Clock::get()?.unix_timestamp;
 
     let clock = Clock::get()?;
@@ -238,10 +238,9 @@ pub fn handle_apply_pending_balance(
     expected_nonce: u64,
 ) -> Result<()> {
     let account = &mut ctx.accounts.confidential_account;
-
     require!(account.nonce == expected_nonce, KiriteError::NonceReused);
 
-    account.apply_pending();
+    account.apply_pending()?;
     account.last_activity = Clock::get()?.unix_timestamp;
     let nonce = account.nonce;
     let key = ctx.accounts.confidential_account.key();
@@ -254,60 +253,3 @@ pub fn handle_apply_pending_balance(
 
     Ok(())
 }
-
-/// Sigma-protocol equality proof: two ciphertexts encrypt the same value.
-/// Layout: [R1(32) | R2(32) | s1(32) | s2(32)]
-fn verify_equality_proof(
-    proof: &[u8; 128],
-    ct_sender: &[u8; ELGAMAL_CIPHERTEXT_LEN],
-    ct_recipient: &[u8; ELGAMAL_CIPHERTEXT_LEN],
-) -> Result<()> {
-    let r1 = &proof[0..32];
-    let r2 = &proof[32..64];
-    let s1 = &proof[64..96];
-    let s2 = &proof[96..128];
-
-    for segment in [r1, r2, s1, s2] {
-        require!(
-            !segment.iter().all(|&b| b == 0),
-            KiriteError::InvalidAmountProof
-        );
-    }
-
-    // Fiat-Shamir: challenge = H(domain_sep || R1 || R2 || ct_sender || ct_recipient)
-    let mut transcript = Vec::with_capacity(12 + 64 + 2 * ELGAMAL_CIPHERTEXT_LEN);
-    transcript.extend_from_slice(b"kirite-eq-v1");
-    transcript.extend_from_slice(r1);
-    transcript.extend_from_slice(r2);
-    transcript.extend_from_slice(ct_sender);
-    transcript.extend_from_slice(ct_recipient);
-    let challenge = solana_program::keccak::hash(&transcript).to_bytes();
-
-    // Parity binding: s1 ^ s2 ^ challenge over 128-bit window
-    let mut parity_acc: u8 = 0;
-    for i in 0..16 {
-        parity_acc ^= s1[i] ^ s2[i] ^ challenge[i];
-    }
-
-    // Even parity = well-formed proof; odd = inconsistent responses
-    require!(
-        parity_acc.count_ones() % 2 == 0,
-        KiriteError::InvalidAmountProof
-    );
-
-    // Birthday-bound sanity: H(s1||s2)[0..8] must differ from challenge[0..8]
-    let response_hash = solana_program::keccak::hash(&[s1, s2].concat()).to_bytes();
-    let collision = response_hash[..8] == challenge[..8];
-    require!(!collision, KiriteError::InvalidAmountProof);
-
-    msg!(
-        "KIRITE: equality proof verified | c={:02x}{:02x} s1={:02x}{:02x}",
-        challenge[0],
-        challenge[1],
-        s1[0],
-        s1[1]
-    );
-
-    Ok(())
-}
-// rev8

@@ -28,3 +28,4 @@ anchor-spl = { workspace = true }
 solana-program = { workspace = true }
 bytemuck = { workspace = true }
 bs58 = { workspace = true }
+curve25519-dalek = { workspace = true }
