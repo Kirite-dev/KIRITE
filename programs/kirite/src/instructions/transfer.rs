@@ -123,8 +123,9 @@ pub struct ConfidentialTransferParams {
     pub sender_ciphertext: [u8; ELGAMAL_CIPHERTEXT_LEN],
     pub recipient_ciphertext: [u8; ELGAMAL_CIPHERTEXT_LEN],
     pub fee_ciphertext: [u8; ELGAMAL_CIPHERTEXT_LEN],
-    /// Bulletproofs-style range proof: amount in [0, 2^64).
-    pub range_proof: [u8; 128],
+    /// Groth16 range proof (BN254): proves amount ∈ [0, 2^64).
+    /// Layout: [proof_a(64) | proof_b(128) | proof_c(64)] = 256 bytes.
+    pub range_proof: [u8; 256],
     /// Schnorr sigma equality proof: both ciphertexts encrypt the same value.
     pub equality_proof: [u8; 128],
 }

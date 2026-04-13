@@ -165,9 +165,10 @@ mod tests {
 
     #[test]
     fn test_net_amount() {
+        // 10 bps on 1M = 1M * 10 / 10000 = 1000
         let (net, fee) = calculate_net_amount(1_000_000, 10).unwrap();
-        assert_eq!(fee, 100);
-        assert_eq!(net, 999_900);
+        assert_eq!(fee, 1000);
+        assert_eq!(net, 999_000);
     }
 
     #[test]

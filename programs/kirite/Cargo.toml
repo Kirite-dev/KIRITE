@@ -29,3 +29,4 @@ solana-program = { workspace = true }
 bytemuck = { workspace = true }
 bs58 = { workspace = true }
 curve25519-dalek = { workspace = true }
+groth16-solana = "0.2.0"
