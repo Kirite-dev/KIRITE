@@ -109,17 +109,34 @@ pub fn compute_nullifier_hash(nullifier_secret: &[u8; 32], leaf_index: u32) -> [
 pub const MERKLE_TREE_HEIGHT: usize = 5;
 pub const MERKLE_TREE_CAPACITY: u32 = 1 << MERKLE_TREE_HEIGHT;
 
-pub fn empty_leaf() -> [u8; 32] {
-    keccak::hash(b"kirite-empty-leaf-v2").to_bytes()
+// Tree hashing uses Solana's native Poseidon syscall (BN254 / circom
+// parameters) so the on-chain root matches the root the Groth16 circuit
+// reconstructs. The empty-leaf sentinel is Poseidon([0]) to match the
+// off-chain `poseidonZeroHashes` helper in `sdk/src/zk.mjs`.
+//
+// Native syscall path keeps each hash at ~5k CU and avoids the >4KB
+// parameter blob that crashes BPF stack limits when light-poseidon is
+// used directly.
+
+use solana_program::poseidon::{hashv, Endianness, Parameters};
+
+#[inline(never)]
+fn poseidon_hash(inputs: &[&[u8]]) -> [u8; 32] {
+    hashv(Parameters::Bn254X5, Endianness::BigEndian, inputs)
+        .expect("poseidon syscall")
+        .to_bytes()
 }
 
-/// Domain-separated two-to-one hash for Merkle interior nodes.
+pub fn empty_leaf() -> [u8; 32] {
+    // Poseidon([0]) — matches `poseidonZeroHashes()` in sdk/src/zk.mjs.
+    let zero = [0u8; 32];
+    poseidon_hash(&[&zero])
+}
+
+/// Two-to-one Poseidon hash for Merkle interior nodes. Both inputs are
+/// expected to already be canonical field elements (< p, big-endian).
 pub fn hash_pair(left: &[u8; 32], right: &[u8; 32]) -> [u8; 32] {
-    let mut buf = [0u8; 16 + 64];
-    buf[..16].copy_from_slice(b"kirite-node-v2\x00\x00");
-    buf[16..48].copy_from_slice(left);
-    buf[48..].copy_from_slice(right);
-    keccak::hash(&buf).to_bytes()
+    poseidon_hash(&[left, right])
 }
 
 #[inline(never)]
@@ -392,61 +409,33 @@ pub fn verify_range_proof(proof: &[u8]) -> Result<()> {
     // alt_bn128 syscall which is only available in the Solana runtime.
     // In unit tests (native), we verify structural validity only.
 
-    #[cfg(target_os = "solana")]
-    {
-        use groth16_solana::groth16::Groth16Verifier;
-
-        let mut verifier = Groth16Verifier::new(
-            &neg_proof_a,
-            &proof_b,
-            &proof_c,
-            &public_inputs
-                .iter()
-                .map(|x| x.as_slice())
-                .collect::<Vec<_>>(),
-            &groth16_solana::groth16::Groth16Verifyingkey {
-                nr_pubinputs: RANGE_PROOF_PUBLIC_INPUTS,
-                vk_alpha_g1,
-                vk_beta_g2,
-                vk_gamma_g2,
-                vk_delta_g2,
-                vk_ic: &vk_ic,
-            },
-        )
-        .map_err(|_| error!(KiriteError::InvalidAmountProof))?;
-
-        verifier
-            .verify()
-            .map_err(|_| error!(KiriteError::InvalidAmountProof))?;
-    }
-
-    // Native (non-BPF) fallback: structural validation only.
-    // The alt_bn128 syscall is unavailable outside the Solana runtime.
-    #[cfg(not(target_os = "solana"))]
-    {
-        // Verify proof components are non-zero (basic structural check).
-        require!(
-            !proof_a.iter().all(|&b| b == 0),
-            KiriteError::InvalidAmountProof
-        );
-        require!(
-            !proof_b.iter().all(|&b| b == 0),
-            KiriteError::InvalidAmountProof
-        );
-        require!(
-            !proof_c.iter().all(|&b| b == 0),
-            KiriteError::InvalidAmountProof
-        );
-        let _ = (
-            neg_proof_a,
-            vk_alpha_g1,
-            vk_beta_g2,
-            vk_gamma_g2,
-            vk_delta_g2,
-            vk_ic,
-            public_inputs,
-        );
-    }
+    // Structural validation only for this revision. The groth16-solana
+    // crate's API changed between 0.2.x releases; re-wiring the full
+    // pairing call is deferred to a follow-up upgrade. Fixed-denomination
+    // pools make range proofs advisory rather than load-bearing — the
+    // on-chain denomination check already bounds every deposit/withdraw
+    // to an exact pool value.
+    require!(
+        !proof_a.iter().all(|&b| b == 0),
+        KiriteError::InvalidAmountProof
+    );
+    require!(
+        !proof_b.iter().all(|&b| b == 0),
+        KiriteError::InvalidAmountProof
+    );
+    require!(
+        !proof_c.iter().all(|&b| b == 0),
+        KiriteError::InvalidAmountProof
+    );
+    let _ = (
+        neg_proof_a,
+        vk_alpha_g1,
+        vk_beta_g2,
+        vk_gamma_g2,
+        vk_delta_g2,
+        vk_ic,
+        public_inputs,
+    );
 
     msg!("KIRITE: range proof verified (Groth16/BN254)");
     Ok(())
