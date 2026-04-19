@@ -84,3 +84,4 @@ lcov.info
 __rewrite.py
 .envfilter.sh
 
+sdk/*.tgz
