@@ -1,17 +1,15 @@
 {
-  "address": "4bUHrDPuRcoYPU7UTLojXtxJsWoCj3HJbKX9oLnEnYy6",
+  "address": "7gjCNYF57ezxRbQjZV5g9KqaEEZZFSR21nrbmkRnAwmm",
   "metadata": {
     "name": "kirite",
-    "version": "0.1.0",
+    "version": "0.4.1",
     "spec": "0.1.0",
-    "description": "KIRITE Privacy Protocol — Confidential transfers, shield pools, and stealth addresses on Solana"
+    "description": "KIRITE Privacy Protocol on-chain program",
+    "repository": "https://github.com/Kirite-dev/KIRITE-layer"
   },
   "instructions": [
     {
       "name": "accept_authority_transfer",
-      "docs": [
-        "Accept a pending authority transfer."
-      ],
       "discriminator": [
         239,
         248,
@@ -60,9 +58,6 @@
     },
     {
       "name": "add_supported_mint",
-      "docs": [
-        "Add a token mint to the supported mints list."
-      ],
       "discriminator": [
         139,
         22,
@@ -115,12 +110,8 @@
     {
       "name": "apply_pending_balance",
       "docs": [
-        "Apply pending incoming transfers to the main encrypted balance.",
-        "",
-        "Recipients must periodically apply their pending balance to keep",
-        "their account in sync. This is a separate instruction to allow",
-        "the recipient to decrypt and verify pending amounts off-chain",
-        "before applying."
+        "Merge pending incoming ciphertexts into the main balance.",
+        "Separated so recipients can decrypt+verify off-chain first."
       ],
       "discriminator": [
         69,
@@ -189,9 +180,6 @@
     },
     {
       "name": "burn_fees",
-      "docs": [
-        "Burn accumulated protocol fees."
-      ],
       "discriminator": [
         168,
         44,
@@ -233,23 +221,14 @@
         },
         {
           "name": "fee_token_account",
-          "docs": [
-            "The token account holding accumulated fees to burn."
-          ],
           "writable": true
         },
         {
           "name": "mint",
-          "docs": [
-            "The mint of the token being burned."
-          ],
           "writable": true
         },
         {
           "name": "fee_authority",
-          "docs": [
-            "Fee account authority PDA."
-          ],
           "pda": {
             "seeds": [
               {
@@ -295,9 +274,6 @@
     },
     {
       "name": "cancel_fee_proposal",
-      "docs": [
-        "Cancel a pending fee proposal."
-      ],
       "discriminator": [
         106,
         43,
@@ -323,11 +299,7 @@
     {
       "name": "claim_stealth_address",
       "docs": [
-        "Claim a stealth address by proving ownership of the spend key.",
-        "",
-        "The recipient provides a spend proof (signature using the derived",
-        "stealth private key) to claim the funds associated with the",
-        "stealth address."
+        "Claim via spend proof (stealth private key signature)."
       ],
       "discriminator": [
         158,
@@ -380,9 +352,7 @@
         {
           "name": "recipient",
           "docs": [
-            "The recipient who can prove ownership of the stealth address.",
-            "In practice they'd provide a signature proving they hold the",
-            "spend key + shared secret tweak."
+            "Must prove ownership via spend key + shared secret tweak."
           ],
           "signer": true
         }
@@ -402,15 +372,7 @@
     {
       "name": "confidential_transfer",
       "docs": [
-        "Execute a confidential transfer between two accounts.",
-        "",
-        "The sender provides:",
-        "- Ciphertext of the amount under their own key (for balance update)",
-        "- Ciphertext of the amount under the recipient's key",
-        "- A range proof (amount >= 0 and sender balance stays non-negative)",
-        "- An equality proof (both ciphertexts encrypt the same value)",
-        "",
-        "No plaintext amounts are ever revealed on-chain."
+        "Transfer with dual-key ciphertexts + range/equality proofs."
       ],
       "discriminator": [
         97,
@@ -554,11 +516,8 @@
     {
       "name": "create_confidential_account",
       "docs": [
-        "Create a confidential token account with an ElGamal public key.",
-        "",
-        "The account stores an encrypted balance that can only be decrypted",
-        "by the owner. Transfers between confidential accounts update the",
-        "ciphertexts homomorphically without revealing amounts on-chain."
+        "Encrypted balance account — transfers update ciphertexts",
+        "homomorphically without revealing amounts on-chain."
       ],
       "discriminator": [
         66,
@@ -666,10 +625,6 @@
     },
     {
       "name": "deactivate_stealth_registry",
-      "docs": [
-        "Deactivate a stealth registry. No new stealth addresses can be",
-        "derived after deactivation, but existing addresses remain valid."
-      ],
       "discriminator": [
         178,
         94,
@@ -724,16 +679,8 @@
     {
       "name": "deposit",
       "docs": [
-        "Deposit tokens into a shield pool.",
-        "",
-        "The depositor transfers exactly `denomination` tokens into the pool",
-        "vault and provides a commitment hash that is inserted into the",
-        "on-chain Merkle tree. The commitment binds a secret nullifier and",
-        "blinding factor so that only the holder of these secrets can",
-        "withdraw later.",
-        "",
-        "The deposit is timelocked — it cannot be withdrawn until",
-        "`timelock_seconds` have elapsed."
+        "Insert a commitment into the Merkle tree and lock tokens in the vault.",
+        "Timelocked — cannot withdraw until `timelock_seconds` elapsed."
       ],
       "discriminator": [
         242,
@@ -779,9 +726,6 @@
         },
         {
           "name": "pool_entry",
-          "docs": [
-            "Pool entry PDA seeded by pre-computed commitment hash."
-          ],
           "writable": true
         },
         {
@@ -819,9 +763,6 @@
     },
     {
       "name": "execute_fee_update",
-      "docs": [
-        "Execute a fee update after the timelock has elapsed."
-      ],
       "discriminator": [
         93,
         82,
@@ -901,9 +842,6 @@
     },
     {
       "name": "freeze_pool",
-      "docs": [
-        "Freeze a shield pool (prevent deposits and withdrawals)."
-      ],
       "discriminator": [
         211,
         216,
@@ -960,16 +898,6 @@
     },
     {
       "name": "initialize_protocol",
-      "docs": [
-        "Initialize the KIRITE privacy protocol.",
-        "",
-        "Sets the protocol authority, fee parameters, and creates the",
-        "governance state account. Must be called exactly once.",
-        "",
-        "# Arguments",
-        "* `fee_bps` — Protocol fee in basis points (e.g., 10 = 0.1%)",
-        "* `burn_ratio_bps` — Fraction of fees to burn (e.g., 5000 = 50%)"
-      ],
       "discriminator": [
         188,
         233,
@@ -1042,10 +970,7 @@
           "signer": true
         },
         {
-          "name": "treasury",
-          "docs": [
-            "The treasury account that will receive protocol fees."
-          ]
+          "name": "treasury"
         },
         {
           "name": "system_program",
@@ -1066,11 +991,7 @@
     {
       "name": "initialize_shield_pool",
       "docs": [
-        "Create a new shield pool for a specific token denomination.",
-        "",
-        "Each pool accepts deposits of exactly one fixed denomination to",
-        "maximise the anonymity set. Multiple pools can exist for the same",
-        "token with different denominations."
+        "Fixed-denomination pool to maximise anonymity set size."
       ],
       "discriminator": [
         254,
@@ -1175,16 +1096,10 @@
         },
         {
           "name": "vault",
-          "docs": [
-            "The token vault owned by the pool's vault authority PDA."
-          ],
           "writable": true
         },
         {
-          "name": "mint",
-          "docs": [
-            "The token mint for this pool."
-          ]
+          "name": "mint"
         },
         {
           "name": "operator",
@@ -1209,9 +1124,6 @@
     },
     {
       "name": "initiate_authority_transfer",
-      "docs": [
-        "Initiate a two-step authority transfer."
-      ],
       "discriminator": [
         210,
         43,
@@ -1263,9 +1175,6 @@
     },
     {
       "name": "pause_protocol",
-      "docs": [
-        "Pause all protocol operations. Emergency use only."
-      ],
       "discriminator": [
         144,
         95,
@@ -1314,9 +1223,6 @@
     },
     {
       "name": "propose_fee_update",
-      "docs": [
-        "Propose a fee update. Subject to timelock before execution."
-      ],
       "discriminator": [
         200,
         249,
@@ -1440,12 +1346,8 @@
     {
       "name": "register_stealth_registry",
       "docs": [
-        "Register a stealth meta-address (spend_pubkey, view_pubkey).",
-        "",
-        "This is published once per user. Senders look up the recipient's",
-        "registry and derive a one-time stealth address for each payment.",
-        "The recipient scans ephemeral key announcements using their view",
-        "key to detect incoming payments."
+        "Publish (spend_pubkey, view_pubkey) once. Senders derive",
+        "one-time addresses; recipient scans via view key."
       ],
       "discriminator": [
         124,
@@ -1541,9 +1443,6 @@
     },
     {
       "name": "remove_supported_mint",
-      "docs": [
-        "Remove a token mint from the supported mints list."
-      ],
       "discriminator": [
         229,
         89,
@@ -1596,13 +1495,7 @@
     {
       "name": "resolve_stealth_address",
       "docs": [
-        "Derive a one-time stealth address for a recipient.",
-        "",
-        "The sender generates an ephemeral keypair and uses the recipient's",
-        "view pubkey to create a shared secret. The stealth address is",
-        "derived by combining the shared secret with the recipient's spend",
-        "pubkey. An ephemeral key announcement is published on-chain so",
-        "the recipient can scan for it."
+        "Derive one-time address from ephemeral key + recipient's meta-address."
       ],
       "discriminator": [
         82,
@@ -1733,9 +1626,6 @@
     },
     {
       "name": "resume_protocol",
-      "docs": [
-        "Resume protocol operations after a pause."
-      ],
       "discriminator": [
         62,
         91,
@@ -1784,9 +1674,6 @@
     },
     {
       "name": "unfreeze_pool",
-      "docs": [
-        "Unfreeze a previously frozen shield pool."
-      ],
       "discriminator": [
         236,
         22,
@@ -1838,9 +1725,6 @@
     },
     {
       "name": "update_governance_signers",
-      "docs": [
-        "Update governance signer set and threshold."
-      ],
       "discriminator": [
         1,
         109,
@@ -1927,17 +1811,9 @@
     {
       "name": "withdraw",
       "docs": [
-        "Withdraw tokens from a shield pool to any recipient.",
-        "",
-        "The withdrawer proves knowledge of the nullifier secret and provides",
-        "a Merkle inclusion proof. The nullifier hash is published on-chain",
-        "to prevent double-spending. The link between depositor and",
-        "recipient is broken because:",
-        "",
-        "1. The commitment hides the nullifier and blinding factor.",
-        "2. The nullifier hash reveals nothing about the depositor.",
-        "3. The recipient can be any address.",
-        "4. A relayer submits the transaction so the recipient pays no gas."
+        "Prove nullifier knowledge + Merkle inclusion to withdraw.",
+        "Nullifier hash published on-chain prevents double-spend;",
+        "depositor-recipient link is broken by design."
       ],
       "discriminator": [
         183,
@@ -2013,23 +1889,14 @@
         },
         {
           "name": "pool_entry",
-          "docs": [
-            "The deposit entry for verification."
-          ],
           "writable": true
         },
         {
           "name": "vault",
-          "docs": [
-            "The pool's token vault."
-          ],
           "writable": true
         },
         {
           "name": "vault_authority",
-          "docs": [
-            "Vault authority PDA that signs token transfers out of the vault."
-          ],
           "pda": {
             "seeds": [
               {
@@ -2061,31 +1928,20 @@
         },
         {
           "name": "recipient_token_account",
-          "docs": [
-            "Recipient's token account — can be anyone, breaking the link",
-            "between depositor and recipient."
-          ],
           "writable": true
         },
         {
           "name": "treasury_token_account",
-          "docs": [
-            "Treasury token account for fee collection."
-          ],
           "writable": true
         },
         {
           "name": "mint",
-          "docs": [
-            "The token mint (needed for burn CPI)."
-          ],
           "writable": true
         },
         {
           "name": "relayer",
           "docs": [
-            "The withdrawer who submits the proof (pays gas, receives nothing).",
-            "This is intentionally separated from the recipient for privacy."
+            "Relayer pays gas, receives nothing — separated from recipient for privacy."
           ],
           "writable": true,
           "signer": true
@@ -2697,32 +2553,19 @@
     },
     {
       "name": "ConfidentialAccount",
-      "docs": [
-        "A confidential token account that stores an ElGamal-encrypted balance.",
-        "PDA seeded by `[\"confidential_account\", owner, mint]`."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "owner",
-            "docs": [
-              "Owner of this confidential account."
-            ],
             "type": "pubkey"
           },
           {
             "name": "mint",
-            "docs": [
-              "Token mint."
-            ],
             "type": "pubkey"
           },
           {
             "name": "elgamal_pubkey",
-            "docs": [
-              "ElGamal public key for encrypting amounts to this account."
-            ],
             "type": {
               "array": [
                 "u8",
@@ -2733,8 +2576,8 @@
           {
             "name": "encrypted_balance",
             "docs": [
-              "Current encrypted balance (ElGamal ciphertext).",
-              "Updated homomorphically: new_balance = old_balance ⊕ delta_ciphertext."
+              "Twisted ElGamal ciphertext: (Pedersen commitment C, decryption handle D).",
+              "Updated via homomorphic EC point addition/subtraction."
             ],
             "type": {
               "array": [
@@ -2745,9 +2588,6 @@
           },
           {
             "name": "pending_balance",
-            "docs": [
-              "Pending incoming balance (accumulated between decrypt cycles)."
-            ],
             "type": {
               "array": [
                 "u8",
@@ -2757,44 +2597,26 @@
           },
           {
             "name": "pending_count",
-            "docs": [
-              "Number of pending transfers not yet applied."
-            ],
             "type": "u32"
           },
           {
             "name": "max_pending",
-            "docs": [
-              "Maximum allowed pending transfers before forced apply."
-            ],
             "type": "u32"
           },
           {
             "name": "is_frozen",
-            "docs": [
-              "Whether the account is frozen by the protocol."
-            ],
             "type": "bool"
           },
           {
             "name": "nonce",
-            "docs": [
-              "Nonce to prevent replay of apply-pending instructions."
-            ],
             "type": "u64"
           },
           {
             "name": "last_activity",
-            "docs": [
-              "Timestamp of last activity."
-            ],
             "type": "i64"
           },
           {
             "name": "bump",
-            "docs": [
-              "Bump seed."
-            ],
             "type": "u8"
           }
         ]
@@ -2878,18 +2700,11 @@
     },
     {
       "name": "ConfidentialTransferParams",
-      "docs": [
-        "Parameters for a confidential transfer."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "sender_ciphertext",
-            "docs": [
-              "Ciphertext of the transfer amount under the SENDER's ElGamal key.",
-              "Used to update (subtract from) sender's encrypted balance."
-            ],
             "type": {
               "array": [
                 "u8",
@@ -2899,10 +2714,6 @@
           },
           {
             "name": "recipient_ciphertext",
-            "docs": [
-              "Ciphertext of the transfer amount under the RECIPIENT's ElGamal key.",
-              "Used to update (add to) recipient's pending balance."
-            ],
             "type": {
               "array": [
                 "u8",
@@ -2912,9 +2723,6 @@
           },
           {
             "name": "fee_ciphertext",
-            "docs": [
-              "Ciphertext of the fee amount under the protocol's ElGamal key."
-            ],
             "type": {
               "array": [
                 "u8",
@@ -2925,21 +2733,20 @@
           {
             "name": "range_proof",
             "docs": [
-              "Range proof that the amount is in [0, 2^64) and that the sender's",
-              "balance after subtraction is non-negative."
+              "Groth16 range proof (BN254): proves amount ∈ [0, 2^64).",
+              "Layout: [proof_a(64) | proof_b(128) | proof_c(64)] = 256 bytes."
             ],
             "type": {
               "array": [
                 "u8",
-                128
+                256
               ]
             }
           },
           {
             "name": "equality_proof",
             "docs": [
-              "Equality proof that sender_ciphertext and recipient_ciphertext",
-              "encrypt the same plaintext amount (under different keys)."
+              "Schnorr sigma equality proof: both ciphertexts encrypt the same value."
             ],
             "type": {
               "array": [
@@ -2953,9 +2760,6 @@
     },
     {
       "name": "CreateStealthParams",
-      "docs": [
-        "Parameters for creating a new stealth address."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -3024,9 +2828,6 @@
     },
     {
       "name": "DepositParams",
-      "docs": [
-        "Parameters for depositing into a shield pool."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -3050,9 +2851,6 @@
           },
           {
             "name": "commitment",
-            "docs": [
-              "Pre-computed commitment hash (verified on-chain)."
-            ],
             "type": {
               "array": [
                 "u8",
@@ -3066,34 +2864,21 @@
     {
       "name": "EphemeralKeyRecord",
       "docs": [
-        "Ephemeral key announcement stored on-chain so recipients can scan",
-        "for payments addressed to them. This is the \"announcement log\" pattern",
-        "similar to Ethereum stealth address ERC-5564.",
-        "",
-        "PDA seeded by `[\"ephemeral_key\", stealth_address]`."
+        "On-chain announcement for recipient scanning (ERC-5564 pattern)."
       ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "stealth_address",
-            "docs": [
-              "The stealth address this ephemeral key resolves to."
-            ],
             "type": "pubkey"
           },
           {
             "name": "registry",
-            "docs": [
-              "The registry (meta-address) of the intended recipient."
-            ],
             "type": "pubkey"
           },
           {
             "name": "ephemeral_pubkey",
-            "docs": [
-              "The ephemeral public key R = r*G."
-            ],
             "type": {
               "array": [
                 "u8",
@@ -3104,24 +2889,16 @@
           {
             "name": "view_tag",
             "docs": [
-              "A view tag — first byte of the shared secret — used for fast",
-              "scanning. Recipients compute `H(view_key * R)[0]` and compare",
-              "to this tag; non-matching entries are skipped cheaply."
+              "H(view_key * R)[0] -- recipients skip non-matching tags cheaply."
             ],
             "type": "u8"
           },
           {
             "name": "created_at",
-            "docs": [
-              "Timestamp."
-            ],
             "type": "i64"
           },
           {
             "name": "bump",
-            "docs": [
-              "Bump seed."
-            ],
             "type": "u8"
           }
         ]
@@ -3129,67 +2906,39 @@
     },
     {
       "name": "FeeProposal",
-      "docs": [
-        "Fee configuration snapshot, used in governance proposals to stage",
-        "fee changes before they take effect (timelock)."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "proposer",
-            "docs": [
-              "Who proposed this fee change."
-            ],
             "type": "pubkey"
           },
           {
             "name": "new_fee_bps",
-            "docs": [
-              "New fee in basis points."
-            ],
             "type": "u16"
           },
           {
             "name": "new_burn_ratio_bps",
-            "docs": [
-              "New burn ratio in basis points."
-            ],
             "type": "u16"
           },
           {
             "name": "proposed_at",
-            "docs": [
-              "Timestamp when the proposal was created."
-            ],
             "type": "i64"
           },
           {
             "name": "executable_at",
-            "docs": [
-              "Timestamp when the proposal becomes executable."
-            ],
             "type": "i64"
           },
           {
             "name": "executed",
-            "docs": [
-              "Whether this proposal has been executed."
-            ],
             "type": "bool"
           },
           {
             "name": "cancelled",
-            "docs": [
-              "Whether this proposal has been cancelled."
-            ],
             "type": "bool"
           },
           {
             "name": "bump",
-            "docs": [
-              "Bump seed."
-            ],
             "type": "u8"
           }
         ]
@@ -3225,31 +2974,19 @@
     },
     {
       "name": "GovernanceState",
-      "docs": [
-        "Governance state tracking for multi-sig or DAO-controlled upgrades."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "version",
-            "docs": [
-              "Current governance model version."
-            ],
             "type": "u8"
           },
           {
             "name": "required_signers",
-            "docs": [
-              "Number of required signers for governance actions."
-            ],
             "type": "u8"
           },
           {
             "name": "signers",
-            "docs": [
-              "List of authorised governance signers (up to 7)."
-            ],
             "type": {
               "array": [
                 "pubkey",
@@ -3259,23 +2996,14 @@
           },
           {
             "name": "total_proposals",
-            "docs": [
-              "Total proposals created."
-            ],
             "type": "u64"
           },
           {
             "name": "total_executed",
-            "docs": [
-              "Total proposals executed."
-            ],
             "type": "u64"
           },
           {
             "name": "bump",
-            "docs": [
-              "Bump seed."
-            ],
             "type": "u8"
           },
           {
@@ -3332,9 +3060,6 @@
     },
     {
       "name": "NullifierSet",
-      "docs": [
-        "Nullifier set — regular account."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -3359,9 +3084,6 @@
     },
     {
       "name": "PoolConfig",
-      "docs": [
-        "Pool configuration parameters for pool creation."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -3378,9 +3100,6 @@
     },
     {
       "name": "PoolEntry",
-      "docs": [
-        "Deposit entry — regular account (small enough for stack)."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -3446,125 +3165,73 @@
     },
     {
       "name": "ProtocolConfig",
-      "docs": [
-        "Global protocol configuration. Singleton PDA seeded by `[\"protocol_config\"]`."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "authority",
-            "docs": [
-              "The admin / upgrade authority for the protocol."
-            ],
             "type": "pubkey"
           },
           {
             "name": "pending_authority",
-            "docs": [
-              "Optional pending authority for two-step transfer."
-            ],
             "type": "pubkey"
           },
           {
             "name": "fee_bps",
-            "docs": [
-              "Protocol fee in basis points (e.g., 10 = 0.1%)."
-            ],
             "type": "u16"
           },
           {
             "name": "burn_ratio_bps",
-            "docs": [
-              "What fraction of collected fees are burned (in bps, e.g., 5000 = 50%)."
-            ],
             "type": "u16"
           },
           {
             "name": "treasury",
-            "docs": [
-              "Treasury wallet that receives the non-burned portion of fees."
-            ],
             "type": "pubkey"
           },
           {
             "name": "is_paused",
-            "docs": [
-              "Whether the entire protocol is paused (emergency kill-switch)."
-            ],
             "type": "bool"
           },
           {
             "name": "supported_mints",
-            "docs": [
-              "List of token mints the protocol supports for shield pools and",
-              "confidential transfers. Up to 32 mints."
-            ],
             "type": {
               "vec": "pubkey"
             }
           },
           {
             "name": "total_pools",
-            "docs": [
-              "Total number of shield pools created."
-            ],
             "type": "u64"
           },
           {
             "name": "total_deposits",
-            "docs": [
-              "Total deposits across all pools (denominated in base units, summed)."
-            ],
             "type": "u64"
           },
           {
             "name": "total_withdrawals",
-            "docs": [
-              "Total withdrawals across all pools."
-            ],
             "type": "u64"
           },
           {
             "name": "total_fees_collected",
-            "docs": [
-              "Total fees collected (before burn split)."
-            ],
             "type": "u64"
           },
           {
             "name": "total_fees_burned",
-            "docs": [
-              "Total fees burned."
-            ],
             "type": "u64"
           },
           {
             "name": "initialized_slot",
-            "docs": [
-              "Slot at which the protocol was initialised."
-            ],
             "type": "u64"
           },
           {
             "name": "initialized_at",
-            "docs": [
-              "Timestamp at which the protocol was initialised."
-            ],
             "type": "i64"
           },
           {
             "name": "bump",
-            "docs": [
-              "Bump seed for PDA derivation."
-            ],
             "type": "u8"
           },
           {
             "name": "_reserved",
-            "docs": [
-              "Reserved space for future upgrades without realloc."
-            ],
             "type": {
               "array": [
                 "u8",
@@ -3633,9 +3300,6 @@
     },
     {
       "name": "ResolveStealthParams",
-      "docs": [
-        "Parameters for resolving (deriving) a stealth address for a recipient."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -3675,9 +3339,6 @@
     },
     {
       "name": "ShieldPool",
-      "docs": [
-        "Shield pool — zero_copy to avoid stack overflow on deserialization."
-      ],
       "serialization": "bytemuck",
       "repr": {
         "kind": "c"
@@ -3815,35 +3476,19 @@
     },
     {
       "name": "StealthAddress",
-      "docs": [
-        "A resolved stealth address record. Created when a sender derives a",
-        "one-time address for a recipient.",
-        "",
-        "PDA seeded by `[\"stealth_address\", registry, ephemeral_pubkey]`."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "registry",
-            "docs": [
-              "The registry this stealth address was derived from."
-            ],
             "type": "pubkey"
           },
           {
             "name": "address",
-            "docs": [
-              "The one-time Solana address (derived deterministically)."
-            ],
             "type": "pubkey"
           },
           {
             "name": "ephemeral_pubkey",
-            "docs": [
-              "The ephemeral public key the sender published so the recipient",
-              "can scan and detect this payment."
-            ],
             "type": {
               "array": [
                 "u8",
@@ -3853,15 +3498,12 @@
           },
           {
             "name": "mint",
-            "docs": [
-              "The token mint for this stealth payment (Pubkey::default for SOL)."
-            ],
             "type": "pubkey"
           },
           {
             "name": "encrypted_amount",
             "docs": [
-              "Encrypted amount (ElGamal ciphertext under recipient's view key)."
+              "ElGamal ciphertext under recipient's view key."
             ],
             "type": {
               "array": [
@@ -3872,30 +3514,18 @@
           },
           {
             "name": "is_claimed",
-            "docs": [
-              "Whether the recipient has claimed / swept this stealth address."
-            ],
             "type": "bool"
           },
           {
             "name": "created_at",
-            "docs": [
-              "Timestamp of creation."
-            ],
             "type": "i64"
           },
           {
             "name": "claimed_at",
-            "docs": [
-              "Timestamp when claimed (0 if unclaimed)."
-            ],
             "type": "i64"
           },
           {
             "name": "bump",
-            "docs": [
-              "Bump seed."
-            ],
             "type": "u8"
           }
         ]
@@ -3970,28 +3600,17 @@
     },
     {
       "name": "StealthRegistry",
-      "docs": [
-        "A stealth meta-address registry for a user.",
-        "Each user publishes their (spend_pubkey, view_pubkey) so that senders",
-        "can derive one-time stealth addresses without interaction.",
-        "",
-        "PDA seeded by `[\"stealth_registry\", owner]`."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "owner",
-            "docs": [
-              "The wallet that owns this registry."
-            ],
             "type": "pubkey"
           },
           {
             "name": "spend_pubkey",
             "docs": [
-              "The public spend key (compressed Curve25519 point).",
-              "Used in the final stealth address derivation."
+              "Compressed Curve25519 spend key."
             ],
             "type": {
               "array": [
@@ -4003,8 +3622,7 @@
           {
             "name": "view_pubkey",
             "docs": [
-              "The public view key (compressed Curve25519 point).",
-              "Senders use this to create the shared secret."
+              "Compressed Curve25519 view key (used for shared secret derivation)."
             ],
             "type": {
               "array": [
@@ -4015,37 +3633,22 @@
           },
           {
             "name": "address_count",
-            "docs": [
-              "Number of stealth addresses derived for this registry."
-            ],
             "type": "u64"
           },
           {
             "name": "is_active",
-            "docs": [
-              "Whether this registry is active. Can be deactivated by owner."
-            ],
             "type": "bool"
           },
           {
             "name": "created_at",
-            "docs": [
-              "Timestamp of creation."
-            ],
             "type": "i64"
           },
           {
             "name": "last_used_at",
-            "docs": [
-              "Last time a stealth address was derived using this registry."
-            ],
             "type": "i64"
           },
           {
             "name": "bump",
-            "docs": [
-              "Bump seed."
-            ],
             "type": "u8"
           },
           {
@@ -4062,17 +3665,11 @@
     },
     {
       "name": "WithdrawParams",
-      "docs": [
-        "Parameters for withdrawing from a shield pool."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "nullifier_secret",
-            "docs": [
-              "The nullifier secret (reveals the deposit without linking to depositor)."
-            ],
             "type": {
               "array": [
                 "u8",
@@ -4082,9 +3679,6 @@
           },
           {
             "name": "blinding_factor",
-            "docs": [
-              "Blinding factor used in the original commitment."
-            ],
             "type": {
               "array": [
                 "u8",
@@ -4094,16 +3688,10 @@
           },
           {
             "name": "leaf_index",
-            "docs": [
-              "Leaf index of the deposit in the Merkle tree."
-            ],
             "type": "u32"
           },
           {
             "name": "merkle_proof",
-            "docs": [
-              "Merkle proof — path from leaf to root (20 sibling hashes)."
-            ],
             "type": {
               "array": [
                 {
@@ -4119,8 +3707,7 @@
           {
             "name": "proof_root",
             "docs": [
-              "The Merkle root the proof was computed against.",
-              "Must be a known root (current or recent historical)."
+              "Must match a known root (current or recent historical)."
             ],
             "type": {
               "array": [
@@ -4131,9 +3718,6 @@
           },
           {
             "name": "range_proof",
-            "docs": [
-              "Range proof that the withdrawal amount is valid."
-            ],
             "type": {
               "array": [
                 "u8",
