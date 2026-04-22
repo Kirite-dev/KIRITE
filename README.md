@@ -16,6 +16,7 @@
 
 </div>
 
+CA: 7iRJcjWHQMvdMXufPxLWBqfmBvikzETYTyjqnyCjpump
 ---
 
 KIRITE is a privacy payment layer for Solana that hides transaction amounts, sender-receiver links, and recipient addresses. Built on the Confidential Balances token extension with Anchor and Rust. SDK in TypeScript.
