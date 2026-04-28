@@ -17,7 +17,7 @@
 
 ---
 
-TypeScript SDK for the [KIRITE](https://kirite.dev) privacy protocol on Solana. Tornado-style ZK shield pool + Monero-style stealth-address recipients, deployed Solana-native.
+TypeScript SDK for the [KIRITE](https://kirite.dev) privacy protocol on Solana. Solana wallets, but private — fixed-denomination ZK shield pool with one-time stealth-address recipients, all native to Solana.
 
 > **the signature exists. the hand does not.**
 

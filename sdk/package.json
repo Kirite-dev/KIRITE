@@ -1,6 +1,6 @@
 {
   "name": "@kirite/sdk",
-  "version": "0.5.10",
+  "version": "0.5.11",
   "description": "TypeScript SDK for the KIRITE privacy protocol on Solana. ZK shield pool with stealth-address recipients.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
