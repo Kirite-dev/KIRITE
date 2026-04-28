@@ -20,10 +20,10 @@ include "node_modules/circomlib/circuits/mux1.circom";
 //   - Private inputs: nullifier_secret, blinding_factor, leaf_index,
 //                     and the Merkle path siblings + indices.
 //
-// Tree height = 5 (32 leaves per pool). Matches the on-chain pool.
-// If we raise the tree height in v3, only this template's `levels`
-// constant changes; the on-chain layout is unaffected because the
-// proof embeds the path itself.
+// Tree height = 15 (32,768 leaves per pool). Matches the on-chain
+// pool. The `Membership(15)` invocation at the bottom is the source
+// of truth; the on-chain layout consumes the same height via
+// MERKLE_TREE_HEIGHT = 15 in programs/kirite/src/utils/crypto.rs.
 
 template MerklePathSelector() {
     signal input in[2];          // [current, sibling]
