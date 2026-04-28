@@ -17,9 +17,7 @@
 
 ---
 
-TypeScript SDK for the [KIRITE](https://kirite.dev) privacy protocol on Solana. Solana wallets, but private — fixed-denomination ZK shield pool with one-time stealth-address recipients, all native to Solana.
-
-> **the signature exists. the hand does not.**
+The TypeScript SDK for [KIRITE](https://kirite.dev). We packaged this up so you can integrate the privacy primitives into your own app, wallet, or backend without touching the on-chain program directly. The privacy program lives on Solana **devnet** today, so point your `Connection` at devnet to try the deposit / withdraw flow. Staking helpers target the live mainnet `$KIRITE` program.
 
 ## Install
 
@@ -58,7 +56,8 @@ import {
 } from "@kirite/sdk";
 import BN from "bn.js";
 
-const connection = new Connection("https://api.mainnet-beta.solana.com");
+// privacy program lives on devnet; staking program is on mainnet
+const connection = new Connection("https://api.devnet.solana.com");
 
 const denomination = DEFAULT_DENOMINATIONS[3]; // 1 SOL
 const [poolPda] = PublicKey.findProgramAddressSync(
@@ -78,35 +77,82 @@ const meta = generateStealthMetaAddress(wallet);
 // meta.spendingKey, meta.viewingKey  → publish to a recipient
 ```
 
-### Deposit and withdraw via the v3 ZK helpers
+### Build a deposit instruction
 
 ```ts
-import { deposit, withdraw } from "@kirite/sdk/zk";
+import { Transaction } from "@solana/web3.js";
+import { NATIVE_MINT, getAssociatedTokenAddress } from "@solana/spl-token";
+import {
+  buildDepositIx,
+  buildComputeUnitLimitIx,
+  deriveShieldPool,
+  deriveVaultAuthority,
+} from "@kirite/sdk/zk";
+import {
+  computeCommitment,
+  randomFieldBytes,
+} from "@kirite/sdk/zk";
 
-// note never leaves the device
-const note = await deposit({ connection, payer: wallet, denomination });
+// 1) local secrets — never leave the device
+const ns = randomFieldBytes();
+const bf = randomFieldBytes();
+const leafIndex = /* pool.nextLeafIndex, read from pool state */;
+const commitment = await computeCommitment(ns, denomination, bf, leafIndex);
 
-// later, withdraw to a stealth address
-const sig = await withdraw({
-  connection,
-  note,
-  recipient: stealthAddress.address,
-  relayerUrl: "https://relayer.kirite.dev",
+// 2) Solana accounts
+const [pool] = deriveShieldPool(NATIVE_MINT, denomination);
+const [vaultAuth] = deriveVaultAuthority(pool);
+const vault = await getAssociatedTokenAddress(NATIVE_MINT, vaultAuth, true);
+const payerAta = await getAssociatedTokenAddress(NATIVE_MINT, wallet.publicKey);
+
+// 3) instruction
+const depIx = buildDepositIx({
+  depositor: wallet.publicKey,
+  depositorTokenAccount: payerAta,
+  vault,
+  shieldPool: pool,
+  commitment,
 });
+
+const tx = new Transaction().add(buildComputeUnitLimitIx(600_000), depIx);
+await connection.sendTransaction(tx, [wallet]);
 ```
 
-### Stake $KIRITE
+For the full deposit → Groth16 proof → withdraw flow, see [`scripts/test-zk-e2e.mjs`](https://github.com/Kirite-dev/KIRITE-layer/blob/main/scripts/test-zk-e2e.mjs) — a runnable end-to-end script that exercises every primitive.
+
+### Build a stake instruction
 
 ```ts
-import { stake, unstake, claim } from "@kirite/sdk/staking";
+import { Transaction } from "@solana/web3.js";
+import { getAssociatedTokenAddress } from "@solana/spl-token";
+import {
+  buildStakeIx,
+  deriveStakingPool,
+  deriveVaultAuthority,
+} from "@kirite/sdk/staking";
+import { KIRITE_TOKEN_MINT } from "@kirite/sdk";
 import BN from "bn.js";
 
-const sig = await stake({
-  connection,
-  owner: wallet,
-  amount: new BN(1_000_000_000),
-});
+const [pool] = deriveStakingPool();
+const [vaultAuth] = deriveVaultAuthority(pool);
+const kiriteVault = await getAssociatedTokenAddress(KIRITE_TOKEN_MINT, vaultAuth, true);
+const stakerKirite = await getAssociatedTokenAddress(KIRITE_TOKEN_MINT, wallet.publicKey);
+
+const sig = await connection.sendTransaction(
+  new Transaction().add(
+    buildStakeIx({
+      staker: wallet.publicKey,
+      stakerKirite,
+      kiriteVault,
+      amount: new BN(1_000_000_000),
+      lockDays: 30,
+    }),
+  ),
+  [wallet],
+);
 ```
+
+`buildClaimIx` and `buildUnstakeIx` mirror the same pattern. See [`scripts/test-staking-e2e.mjs`](https://github.com/Kirite-dev/KIRITE-layer/blob/main/scripts/test-staking-e2e.mjs) for a runnable example.
 
 > Token CA: `7iRJcjWHQMvdMXufPxLWBqfmBvikzETYTyjqnyCjpump`
 

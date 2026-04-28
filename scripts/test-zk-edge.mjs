@@ -58,8 +58,9 @@ import {
 } from "../sdk/src/zk.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DENOM = 5_000_000n; // 0.005 SOL pool used in test-zk-e2e
+const DENOM = 12_345_678n; // matches the height-15 verified pool used by test-zk-e2e
 const RPC_URL = process.env.RPC_URL || "https://api.devnet.solana.com";
+const SCAN_RPC_URL = process.env.SCAN_RPC_URL || RPC_URL;
 const WASM = path.resolve(__dirname, "../circuits/build/membership_js/membership.wasm");
 const ZKEY = path.resolve(__dirname, "../circuits/build/membership_final.zkey");
 
@@ -124,8 +125,8 @@ async function deposit(conn, payer, pool, vault, leafIndex) {
   return { ns, bf, leafIndex, commitment, sig };
 }
 
-async function buildProofFor(conn, pool, note, recipientAtaPubkey) {
-  const allLeaves = await fetchPoolLeaves(conn, pool, { limit: 1000 });
+async function buildProofFor(conn, scanConn, pool, note, recipientAtaPubkey) {
+  const allLeaves = await fetchPoolLeaves(scanConn, pool, { limit: 1000 });
   return generateMembershipProof({
     nullifierSecret: note.ns,
     blindingFactor: note.bf,
@@ -176,6 +177,7 @@ async function main() {
   console.log("=========================\n");
 
   const conn = new Connection(RPC_URL, "confirmed");
+  const scanConn = SCAN_RPC_URL === RPC_URL ? conn : new Connection(SCAN_RPC_URL, "confirmed");
   const payer = loadKp();
   console.log("payer:   ", payer.publicKey.toBase58());
   console.log("program: ", KIRITE_PROGRAM_ID.toBase58());
@@ -198,7 +200,7 @@ async function main() {
     happyNote = await deposit(conn, payer, pool, vault, leafIdx);
     leafIdx++;
     const recipient = await ensureRecipient(conn, payer);
-    const { proof, publicInputs } = await buildProofFor(conn, pool, happyNote, recipient.ata);
+    const { proof, publicInputs } = await buildProofFor(conn, scanConn, pool, happyNote, recipient.ata);
     await submitWithdraw(conn, payer, pool, vault, recipient.ata, treasuryAta, proof, publicInputs);
     const acc = await getAccount(conn, recipient.ata);
     if (acc.amount === 0n) throw new Error("recipient got nothing");
@@ -218,7 +220,7 @@ async function main() {
     // Generate the proof bound to fakeRecipient, then try to use it
     // with realRecipient. The on-chain verifier recomputes
     // recipient_hash from the actual recipient and rejects.
-    const { proof, publicInputs } = await buildProofFor(conn, pool, note, fakeRecipient.ata);
+    const { proof, publicInputs } = await buildProofFor(conn, scanConn, pool, note, fakeRecipient.ata);
     try {
       await submitWithdraw(conn, payer, pool, vault, realRecipient.ata, treasuryAta, proof, publicInputs);
       ko("wrong-recipient was accepted (should reject)");
@@ -240,7 +242,7 @@ async function main() {
     const note = await deposit(conn, payer, pool, vault, leafIdx);
     leafIdx++;
     const recipient = await ensureRecipient(conn, payer);
-    const { proof, publicInputs } = await buildProofFor(conn, pool, note, recipient.ata);
+    const { proof, publicInputs } = await buildProofFor(conn, scanConn, pool, note, recipient.ata);
     const tampered = new Uint8Array(proof);
     tampered[0] ^= 0x01; // flip a bit in proof_a
     try {
@@ -257,7 +259,7 @@ async function main() {
 
     // Recover: actually withdraw with the valid proof so this leaf
     // doesn't sit unspent forever.
-    const { proof: cleanProof, publicInputs: cleanPub } = await buildProofFor(conn, pool, note, recipient.ata);
+    const { proof: cleanProof, publicInputs: cleanPub } = await buildProofFor(conn, scanConn, pool, note, recipient.ata);
     await submitWithdraw(conn, payer, pool, vault, recipient.ata, treasuryAta, cleanProof, cleanPub);
   } catch (e) {
     ko("tampered proof setup failed", e);
@@ -269,7 +271,7 @@ async function main() {
     const note = await deposit(conn, payer, pool, vault, leafIdx);
     leafIdx++;
     const recipient = await ensureRecipient(conn, payer);
-    const { proof, publicInputs } = await buildProofFor(conn, pool, note, recipient.ata);
+    const { proof, publicInputs } = await buildProofFor(conn, scanConn, pool, note, recipient.ata);
     const fakeRoot = new Uint8Array(32);
     fakeRoot[0] = 0xab; fakeRoot[31] = 0xcd; // not in pool's root history
     try {
@@ -287,7 +289,7 @@ async function main() {
       }
     }
     // Recover the leaf with valid root
-    const { proof: ok2, publicInputs: pi2 } = await buildProofFor(conn, pool, note, recipient.ata);
+    const { proof: ok2, publicInputs: pi2 } = await buildProofFor(conn, scanConn, pool, note, recipient.ata);
     await submitWithdraw(conn, payer, pool, vault, recipient.ata, treasuryAta, ok2, pi2);
   } catch (e) {
     ko("unknown root setup failed", e);
@@ -299,14 +301,14 @@ async function main() {
     const note = await deposit(conn, payer, pool, vault, leafIdx);
     leafIdx++;
     const recipient = await ensureRecipient(conn, payer);
-    const { proof, publicInputs } = await buildProofFor(conn, pool, note, recipient.ata);
+    const { proof, publicInputs } = await buildProofFor(conn, scanConn, pool, note, recipient.ata);
     await submitWithdraw(conn, payer, pool, vault, recipient.ata, treasuryAta, proof, publicInputs);
 
     // Second withdraw with same nullifier_hash → nullifier_record PDA
     // already exists → `init` reverts.
     try {
       const recipient2 = await ensureRecipient(conn, payer);
-      const { proof: p2, publicInputs: pi2 } = await buildProofFor(conn, pool, note, recipient2.ata);
+      const { proof: p2, publicInputs: pi2 } = await buildProofFor(conn, scanConn, pool, note, recipient2.ata);
       await submitWithdraw(conn, payer, pool, vault, recipient2.ata, treasuryAta, p2, pi2);
       ko("double-spend was accepted");
     } catch (e) {
@@ -341,9 +343,9 @@ async function main() {
     // Both leaves recoverable via withdraw.
     const r1 = await ensureRecipient(conn, payer);
     const r2 = await ensureRecipient(conn, payer);
-    const { proof: p1, publicInputs: pi1 } = await buildProofFor(conn, pool, n1, r1.ata);
+    const { proof: p1, publicInputs: pi1 } = await buildProofFor(conn, scanConn, pool, n1, r1.ata);
     await submitWithdraw(conn, payer, pool, vault, r1.ata, treasuryAta, p1, pi1);
-    const { proof: p2, publicInputs: pi2 } = await buildProofFor(conn, pool, n2, r2.ata);
+    const { proof: p2, publicInputs: pi2 } = await buildProofFor(conn, scanConn, pool, n2, r2.ata);
     await submitWithdraw(conn, payer, pool, vault, r2.ata, treasuryAta, p2, pi2);
 
     leafIdx = baseIdx + 2;
@@ -357,8 +359,8 @@ async function main() {
   try {
     const final = decodeShieldPool((await conn.getAccountInfo(pool)).data);
     console.log(`    nextLeafIndex=${final.nextLeafIndex}, totalDeposits=${final.totalDeposits}, totalWithdrawals=${final.totalWithdrawals}`);
-    if (final.nextLeafIndex >= 32) {
-      console.log("    ⚠ pool is at capacity — 33rd deposit should fail with PoolCapacityExceeded");
+    if (final.nextLeafIndex >= 32_768) {
+      console.log("    ⚠ pool is at capacity — next deposit should fail with PoolCapacityExceeded");
     }
     ok("pool counters readable");
   } catch (e) {

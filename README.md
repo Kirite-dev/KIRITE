@@ -6,7 +6,7 @@
 
 <a href="https://github.com/Kirite-dev/KIRITE-layer/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="MIT License"/></a>
 <a href="https://github.com/Kirite-dev/KIRITE-layer/actions"><img src="https://img.shields.io/badge/build-passing-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="build passing"/></a>
-<a href="https://github.com/Kirite-dev/KIRITE-layer/releases"><img src="https://img.shields.io/badge/version-0.5.11-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="v0.5.11"/></a>
+<a href="https://github.com/Kirite-dev/KIRITE-layer/releases"><img src="https://img.shields.io/badge/version-0.5.13-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="v0.5.13"/></a>
 <a href="https://www.npmjs.com/package/@kirite/sdk"><img src="https://img.shields.io/badge/npm-%40kirite%2Fsdk-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="npm"/></a>
 <a href="https://www.rust-lang.org"><img src="https://img.shields.io/badge/rust-1.85%2B-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="rust 1.85+"/></a>
 <a href="https://www.anchor-lang.com"><img src="https://img.shields.io/badge/anchor-0.31-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="anchor 0.31"/></a>
