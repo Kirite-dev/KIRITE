@@ -37,10 +37,14 @@ pub const N_PUBLIC_INPUTS: usize = membership_vk::N_PUBLIC;
 // BN254 base-field modulus, big-endian. Used both as a sanity gate on
 // the public inputs (they must be < p) and as the modulus for negating
 // proof_a's y-coordinate.
-const BN254_P: [u8; 32] = [
+/// BN254 base-field modulus (big-endian). Public so other instructions
+/// (e.g. deposit's commitment guard) can reuse the same constant.
+pub const BN254_FIELD_MODULUS: [u8; 32] = [
     0x30, 0x64, 0x4e, 0x72, 0xe1, 0x31, 0xa0, 0x29, 0xb8, 0x50, 0x45, 0xb6, 0x81, 0x81, 0x58, 0x5d,
     0x97, 0x81, 0x6a, 0x91, 0x68, 0x71, 0xca, 0x8d, 0x3c, 0x20, 0x8c, 0x16, 0xd8, 0x7c, 0xfd, 0x47,
 ];
+
+const BN254_P: [u8; 32] = BN254_FIELD_MODULUS;
 
 // `vk_gamme_g2` is spelled with the same typo upstream in
 // groth16-solana 0.2.x. Don't fix it here; mirror the upstream field
@@ -74,6 +78,13 @@ fn negate_g1_y(g1: &[u8; 64]) -> [u8; 64] {
         out[32 + i] = diff as u8;
     }
     out
+}
+
+/// True iff the 32-byte big-endian value is strictly less than the
+/// BN254 field modulus. Use this for any caller-supplied bytes that
+/// will be hashed or treated as a field element on-chain.
+pub fn is_canonical_field_element(bytes: &[u8; 32]) -> bool {
+    lt_be32(bytes, &BN254_FIELD_MODULUS)
 }
 
 /// Compare two 32-byte big-endian numbers. Returns true if lhs < rhs.

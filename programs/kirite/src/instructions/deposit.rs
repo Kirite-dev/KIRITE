@@ -6,6 +6,8 @@ use crate::events::DepositCommitted;
 use crate::state::protocol::ProtocolConfig;
 use crate::state::shield_pool::ShieldPool;
 use crate::utils::crypto::{insert_leaf_light, ELGAMAL_CIPHERTEXT_LEN, MERKLE_TREE_HEIGHT};
+use crate::utils::validation::require_supported_mint;
+use crate::utils::zk::is_canonical_field_element;
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
 pub struct DepositParams {
@@ -114,6 +116,18 @@ pub fn handle_deposit(ctx: Context<Deposit>, params: DepositParams) -> Result<()
         params.commitment.iter().any(|&b| b != 0),
         KiriteError::InvalidAmountProof
     );
+
+    // HIGH-004: reject non-canonical field elements (>= BN254 modulus).
+    // The on-chain Poseidon syscall consumes raw bytes; the off-chain
+    // prover always reduces mod p. Diverging here would silently lock
+    // the depositor's funds inside the vault.
+    require!(
+        is_canonical_field_element(&params.commitment),
+        KiriteError::InvalidAmountProof
+    );
+
+    // HIGH-001: enforce mint allowlist on deposit.
+    require_supported_mint(&ctx.accounts.protocol_config, &pool_mint)?;
 
     require!(
         ctx.accounts.depositor_token_account.amount >= denomination,

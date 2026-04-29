@@ -6,6 +6,7 @@ use crate::events::WithdrawalExecuted;
 use crate::state::protocol::ProtocolConfig;
 use crate::state::shield_pool::{NullifierRecord, ShieldPool};
 use crate::utils::math::{calculate_net_amount, split_fee};
+use crate::utils::validation::require_supported_mint;
 use crate::utils::zk::{
     pubkey_to_field, u64_to_field_be, verify_membership_proof, N_PUBLIC_INPUTS, PROOF_LEN,
     PUBLIC_INPUT_LEN,
@@ -99,6 +100,9 @@ pub fn handle_withdraw(ctx: Context<Withdraw>, params: WithdrawParams) -> Result
     );
 
     require!(!pool.frozen(), KiriteError::PoolFrozen);
+
+    // HIGH-001: enforce mint allowlist on withdraw.
+    require_supported_mint(&ctx.accounts.protocol_config, &pool_mint)?;
 
     require!(
         ctx.accounts.vault.key() == pool_vault,

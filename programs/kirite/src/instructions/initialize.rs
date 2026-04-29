@@ -6,8 +6,10 @@ use crate::state::protocol::{GovernanceState, ProtocolConfig};
 use crate::state::shield_pool::{PoolConfig, ShieldPool};
 use crate::utils::crypto::compute_zero_hashes;
 use crate::utils::validation::{
-    validate_denomination, validate_fee_bps, validate_timelock_duration,
+    require_authority, require_supported_mint, validate_denomination, validate_fee_bps,
+    validate_timelock_duration,
 };
+use anchor_spl::token::TokenAccount;
 
 #[derive(Accounts)]
 pub struct InitializeProtocol<'info> {
@@ -107,12 +109,25 @@ pub struct InitializeShieldPool<'info> {
         seeds = [b"protocol_config"],
         bump = protocol_config.bump,
         constraint = !protocol_config.is_paused @ KiriteError::ProtocolPaused,
+        constraint = protocol_config.authority == operator.key() @ KiriteError::UnauthorizedAuthority,
     )]
     pub protocol_config: Account<'info, ProtocolConfig>,
 
-    /// CHECK: Token vault; validated via CPI in deployment.
-    #[account(mut)]
-    pub vault: UncheckedAccount<'info>,
+    /// CHECK: PDA derived from the shield pool; vault_authority_bump
+    /// is persisted on `pool` so withdraw can re-sign without trusting
+    /// caller-supplied data.
+    #[account(
+        seeds = [b"vault_authority", shield_pool.key().as_ref()],
+        bump,
+    )]
+    pub vault_authority: UncheckedAccount<'info>,
+
+    #[account(
+        mut,
+        constraint = vault.owner == vault_authority.key() @ KiriteError::UnauthorizedAuthority,
+        constraint = vault.mint == mint.key() @ KiriteError::UnsupportedMint,
+    )]
+    pub vault: Box<Account<'info, TokenAccount>>,
 
     pub mint: Account<'info, anchor_spl::token::Mint>,
 
@@ -128,6 +143,11 @@ pub fn handle_initialize_shield_pool(
 ) -> Result<()> {
     validate_denomination(config.denomination)?;
     validate_timelock_duration(config.timelock_seconds)?;
+    // HIGH-001: enforce mint allowlist at pool creation.
+    require_supported_mint(&ctx.accounts.protocol_config, &ctx.accounts.mint.key())?;
+    // HIGH-003: pool creation is gated to the protocol authority;
+    // also re-asserted via the account constraint above.
+    require_authority(&ctx.accounts.protocol_config, &ctx.accounts.operator.key())?;
 
     let clock = Clock::get()?;
     let zero_hashes = compute_zero_hashes();
@@ -156,7 +176,9 @@ pub fn handle_initialize_shield_pool(
     pool.created_at = clock.unix_timestamp;
     pool.last_deposit_at = 0;
     pool.bump = ctx.bumps.shield_pool;
-    pool.vault_authority_bump = 0; // set during vault init
+    // HIGH-002: persist the canonical vault_authority bump at init so
+    // withdraw can sign with stable seeds without re-deriving.
+    pool.vault_authority_bump = ctx.bumps.vault_authority;
 
     let protocol = &mut ctx.accounts.protocol_config;
     protocol.total_pools = protocol.total_pools.saturating_add(1);
