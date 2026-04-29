@@ -9,11 +9,11 @@ kirite = "FjYwYT9PDcW2UmM2siXpURjSSCDoXTvviqb3V8amzusL"
 kirite-staking = "DYpknm5Ukq4szP9P6NzzRYjQrCgNcsKHbwzUqCzs5ib3"
 
 [programs.localnet]
-kirite = "4bUHrDPuRcoYPU7UTLojXtxJsWoCj3HJbKX9oLnEnYy6"
+kirite = "FjYwYT9PDcW2UmM2siXpURjSSCDoXTvviqb3V8amzusL"
 kirite-staking = "DYpknm5Ukq4szP9P6NzzRYjQrCgNcsKHbwzUqCzs5ib3"
 
 [programs.mainnet]
-kirite = "4bUHrDPuRcoYPU7UTLojXtxJsWoCj3HJbKX9oLnEnYy6"
+kirite = "FjYwYT9PDcW2UmM2siXpURjSSCDoXTvviqb3V8amzusL"
 kirite-staking = "8LKqyAx7Uuyu4PqwD7RRGhxjLj1GnPgaEzUu4RUitYt3"
 
 [provider]
