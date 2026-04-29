@@ -1,0 +1,14 @@
+round: 0 (baseline)
+contributor: kirite core (initial phase 2)
+date: 2026-04-29 (existing pre-ceremony state)
+sha256(zkey): 36d5cdecffcf4ce56d93ce34393693db1a9d887ccb02d0b3402518a4e1a86d2f
+
+This is the state of the membership.circom phase-2 zkey before the
+multi-party ceremony begins. It carries kirite core's single phase-2
+contribution that has been documented in the README since the v3
+build. Subsequent rounds (round_1 onward) are independent
+contributors. As long as at least one contributor in the chain
+honestly destroys their entropy, the resulting verifier key is sound.
+
+Verify the file with:
+  snarkjs zkey verify circuits/membership.r1cs circuits/build/pot14_final.ptau ceremony/rounds/round_0.zkey
