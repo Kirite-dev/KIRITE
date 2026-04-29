@@ -48,6 +48,26 @@ ehthumbs.db
 keypair.json
 wallet.json
 id.json
+.npmrc
+
+# Solana program keypairs (NEVER commit signing keys)
+keys/
+
+# Local test deposit notes (contain nullifier secrets)
+notes/
+
+# Trusted setup local artifacts (the embedded VK is in src/)
+*.zkey
+*.ptau
+*.r1cs
+*.sym
+*.wasm
+!**/lib/**/*.wasm
+!**/public/**/*.wasm
+
+# Local test state
+scripts/.staking-test-state.json
+scripts/.*.json
 
 # Testing
 coverage/

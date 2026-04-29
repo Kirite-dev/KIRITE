@@ -6,67 +6,76 @@
 
 <a href="https://github.com/Kirite-dev/KIRITE-layer/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="MIT License"/></a>
 <a href="https://github.com/Kirite-dev/KIRITE-layer/actions"><img src="https://img.shields.io/badge/build-passing-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="build passing"/></a>
-<a href="https://github.com/Kirite-dev/KIRITE-layer/releases"><img src="https://img.shields.io/badge/version-0.1.0-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="v0.1.0"/></a>
-<a href="https://explorer.solana.com/address/4bUHrDPuRcoYPU7UTLojXtxJsWoCj3HJbKX9oLnEnYy6?cluster=devnet"><img src="https://img.shields.io/badge/solana-devnet-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="solana devnet"/></a>
+<a href="https://github.com/Kirite-dev/KIRITE-layer/releases"><img src="https://img.shields.io/badge/version-0.5.0-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="v0.5.0"/></a>
+<a href="https://www.npmjs.com/package/@kirite/sdk"><img src="https://img.shields.io/badge/npm-%40kirite%2Fsdk-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="npm"/></a>
 <a href="https://www.rust-lang.org"><img src="https://img.shields.io/badge/rust-1.75%2B-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="rust 1.75+"/></a>
 <a href="https://www.anchor-lang.com"><img src="https://img.shields.io/badge/anchor-0.30-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="anchor 0.30"/></a>
-<a href="https://github.com/Kirite-dev/KIRITE-layer/stargazers"><img src="https://img.shields.io/badge/stars-%E2%98%85-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="stars"/></a>
 <a href="https://x.com/KiriteDev"><img src="https://img.shields.io/badge/x-%40KiriteDev-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="x @KiriteDev"/></a>
 <a href="https://kirite.dev"><img src="https://img.shields.io/badge/website-kirite.dev-c8ff00?style=flat-square&cacheSeconds=3600&v=2" alt="kirite.dev"/></a>
 
 </div>
 
-CA: 7iRJcjWHQMvdMXufPxLWBqfmBvikzETYTyjqnyCjpump
 ---
 
-KIRITE is a privacy payment layer for Solana that hides transaction amounts, sender-receiver links, and recipient addresses. Built on the Confidential Balances token extension with Anchor and Rust. SDK in TypeScript.
+KIRITE is a privacy layer on Solana. A Tornado-style ZK shield pool with stealth-address recipients, deployed Solana-native. Same broad ZK-privacy family as Aztec, Railgun, and Tornado Cash. Architecturally closest to Tornado (fixed-denomination Merkle pool), with stealth-address recipients on top.
 
-> Deployed on Solana Devnet: [`4bUHrDPuRcoYPU7UTLojXtxJsWoCj3HJbKX9oLnEnYy6`](https://explorer.solana.com/address/4bUHrDPuRcoYPU7UTLojXtxJsWoCj3HJbKX9oLnEnYy6?cluster=devnet) · [Solscan](https://solscan.io/account/4bUHrDPuRcoYPU7UTLojXtxJsWoCj3HJbKX9oLnEnYy6?cluster=devnet)
+The `$KIRITE` token captures protocol fees from private transfers and routes them to stakers.
 
-## Features
-
-| Feature                       | Status   | Notes                                                       |
-| ----------------------------- | -------- | ----------------------------------------------------------- |
-| Confidential Transfer         | stable   | Twisted ElGamal encryption on top of Token Extensions       |
-| Shield Pool                   | stable   | Multi-asset Merkle commitment pool with nullifier tracking  |
-| Stealth Address               | stable   | Dual-key ECDH derivation with on-chain ephemeral registry   |
-| Configurable Privacy Levels   | beta     | Instant / Standard / Maximum delay tiers                    |
-| View Key Selective Disclosure | beta     | Optional auditor view key for compliant disclosure          |
-| Cross-chain Bridge            | alpha    | Privacy-preserving bridge to EVM (research phase)           |
+> **Token CA:** `7iRJcjWHQMvdMXufPxLWBqfmBvikzETYTyjqnyCjpump` (Solana mainnet)
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    user[user wallet] -->|encrypt| ct[Confidential Transfer]
-    ct -->|commit| sp[Shield Pool]
-    sp -->|derive| sa[Stealth Address]
-    sa -->|claim| recipient[recipient]
+    user[user wallet] -->|deposit| sp[Shield Pool]
+    sp -->|Groth16 membership proof| relayer[Relayer]
+    relayer -->|withdraw| sa[Stealth Address]
+    sa -->|recipient claim| recipient[recipient wallet]
 
-    ct -.->|verified by| runtime[Solana runtime]
-    sp -.->|stored in| accounts[on-chain accounts]
-    sa -.->|registered in| registry[stealth registry]
+    sp -.->|Poseidon Merkle| onchain[Solana program]
+    relayer -.->|OFAC SDN screening| screening[sanctions check]
 ```
 
-The protocol is composed of three independent layers. Each one removes a different metadata leakage vector. They can be used in isolation or combined for end-to-end transaction invisibility.
+Two pieces working together:
 
-## Performance
+- **Shield Pool** — Poseidon-Merkle commitment pool. Deposits hash into a tree. Withdraws prove "I own one of the leaves" via a Groth16 zero-knowledge proof, without revealing which leaf. The chain only sees a nullifier hash and a Merkle root. The secret stays on the user's device.
+- **Stealth Address** — Withdraws land on a one-time address derived from the recipient's public spend + view keys (DKSAP). The recipient scans for incoming notes with the view key alone. The recipient's main address never appears on-chain.
 
-| Operation                    | Compute Units | Latency      | Cost                |
-| ---------------------------- | ------------- | ------------ | ------------------- |
-| Confidential transfer        | ~85,000 CU    | < 400 ms     | ~0.000005 SOL       |
-| Shield pool deposit          | ~120,000 CU   | < 500 ms     | ~0.000007 SOL       |
-| Shield pool withdraw         | ~180,000 CU   | < 700 ms     | ~0.000010 SOL       |
-| Stealth address derivation   | client-side   | < 50 ms      | none                |
-| Proof generation (browser)   | client-side   | < 1 ms       | none                |
+Built on Solana's native `alt_bn128` and `poseidon` syscalls. Browser-side proof generation via snarkjs WASM (~1s desktop, ~3s mobile). Non-custodial: the pool authority cannot move user funds.
 
-## Risk and Privacy Score
+## What KIRITE does and does not do
 
-| Configuration                          | Anonymity Set | Linkability Resistance | Recommended For                  |
-| -------------------------------------- | ------------- | ---------------------- | -------------------------------- |
-| Confidential Transfer only             | n/a           | low                    | hiding amounts                   |
-| Confidential Transfer + Shield Pool    | medium        | medium                 | regular DeFi privacy             |
-| Full stack (CT + SP + Stealth)         | large         | high                   | high-value transfers             |
+**Does:**
+- Hide the deposit ↔ withdraw link (Groth16 membership proof reveals only a nullifier hash and a Merkle root)
+- Hide the recipient address (one-time stealth address; recipient's main wallet never appears on-chain)
+- Stay non-custodial (note material lives on the user's device; vault is PDA-locked)
+
+**Does not:**
+- Hide amounts (each pool is fixed denomination; uniformity is the privacy mechanism)
+- Provide infinite anonymity (v1 pools cap at 32 leaves; practical privacy scales with the active anonymity set)
+- Encrypt account balances (Solana Confidential Balances is a separate primitive; KIRITE may migrate when the regulatory landscape allows it)
+
+## Status
+
+| Component                          | Status                                                |
+| ---------------------------------- | ----------------------------------------------------- |
+| `$KIRITE` token (Raydium)          | live on Solana mainnet                                |
+| Staking program                    | deployed on Solana mainnet                            |
+| Privacy program (Shield + Stealth) | end-to-end verified on devnet, mainnet rollout in progress |
+| Relayer (OFAC screening)           | devnet, mainnet pending privacy program rollout       |
+| `@kirite/sdk` (npm)                | v0.5.0 on npm                                         |
+| Telegram miniapp                   | devnet                                                |
+| Chrome extension                   | building                                              |
+
+The privacy program is **already verified end-to-end on devnet**. Real Groth16 proofs, real Poseidon Merkle tree, real nullifier PDAs, real stealth-address withdraws. We are in the final round of testing and debugging before the mainnet deploy. Date is not pre-announced; when it is solid, it ships.
+
+## Tech stack
+
+- **On-chain:** Anchor / Rust, Solana native `alt_bn128` and `poseidon` syscalls
+- **ZK circuits:** Circom + Groth16 over BN254, Hermez powers-of-tau ceremony
+- **Client:** snarkjs WASM for browser proof generation (~1s desktop, ~3s mobile)
+- **SDK:** TypeScript ([@kirite/sdk](https://www.npmjs.com/package/@kirite/sdk))
+- **Relayer:** Vercel-hosted Node, OFAC SDN auto-refresh
 
 ## Build
 
@@ -76,229 +85,114 @@ Requires `solana-cli >= 1.18`, `anchor >= 0.30`, `rust >= 1.75`, `node >= 20`.
 git clone https://github.com/Kirite-dev/KIRITE-layer.git
 cd KIRITE-layer
 
-# build the on-chain program
+# build the on-chain programs (kirite + kirite-staking)
 anchor build
 
 # run the on-chain test suite
 anchor test
 
 # build the SDK
-cd sdk && tsc
-
-# build the CLI
-cd ../cli && tsc
+cd sdk && npm install && npm run build
 ```
 
-## Quick Start
-
-### Rust (on-chain program)
-
-```rust
-use anchor_lang::prelude::*;
-use kirite::cpi::accounts::Deposit;
-use kirite::program::Kirite;
-
-// Compose a deposit into the shield pool from another Anchor program
-pub fn deposit_via_kirite(ctx: Context<DepositViaKirite>) -> Result<()> {
-    let cpi_ctx = CpiContext::new(
-        ctx.accounts.kirite_program.to_account_info(),
-        Deposit {
-            shield_pool: ctx.accounts.shield_pool.to_account_info(),
-            depositor: ctx.accounts.user.to_account_info(),
-            // ... other accounts
-        },
-    );
-
-    kirite::cpi::deposit(cpi_ctx, params)
-    // returns Ok(()) on success
-}
-```
-
-### TypeScript (SDK)
-
-```typescript
-import { KiriteClient, ShieldPool, StealthAddress } from "@kirite/sdk";
-import { Connection, Keypair, PublicKey } from "@solana/web3.js";
-
-const connection = new Connection("https://api.mainnet-beta.solana.com");
-const wallet = Keypair.fromSecretKey(/* ... */);
-const kirite = new KiriteClient(connection, wallet);
-
-// 1. confidential transfer
-const tx = await kirite.confidentialTransfer({
-  mint: USDC_MINT,
-  recipient: recipientPubkey,
-  amount: 1_000_000,
-});
-// { signature: "5kF...x9q", encryptedAmount: <Uint8Array>, status: "confirmed" }
-
-// 2. shield pool deposit
-const pool = new ShieldPool(kirite);
-const note = await pool.deposit({ mint: SOL_MINT, amount: 1_000_000_000 });
-// { commitment: "0x4b2f...e9d0", nullifier: "0xa9f3...10b4", leafIndex: 142 }
-
-// 3. shield pool withdraw to a different wallet
-const result = await pool.withdraw({
-  commitment: note.commitment,
-  nullifier: note.nullifier,
-  recipient: newWalletPubkey,
-});
-// { signature: "3pY...zK1", privacyLevel: "standard", anonymitySet: 24 }
-
-// 4. stealth address generation
-const stealth = new StealthAddress(kirite);
-const { address, ephemeralPubkey } = stealth.generate(recipientSpendKey, recipientViewKey);
-// { address: PublicKey, ephemeralPubkey: PublicKey }
-```
-
-### Bash (CLI)
+## Quick start (TypeScript SDK)
 
 ```bash
-# initialize a confidential token account
-kirite init --mint EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
-
-# confidential transfer
-kirite transfer \
-  --mint EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v \
-  --to 9mR2xK7PDvBQVjNrW8FpqLg3KfZsdH4kXvT2YAbRcEnp \
-  --amount 100
-
-# shield pool deposit
-kirite pool deposit --mint So11111111111111111111111111111111111111112 --amount 1.0
-
-# shield pool withdraw with privacy level
-kirite pool withdraw \
-  --commitment 0x4b2f...e9d0 \
-  --nullifier 0xa9f3...10b4 \
-  --to 7xK93fQ2RvBQVjNrW8FpqLg3KfZsdH4kXvT2YAbRcEnp \
-  --privacy maximum
-
-# stealth address scan
-kirite stealth scan --view-key ./keys/view.json
+npm install @kirite/sdk @solana/web3.js
 ```
 
-## Project Structure
+```typescript
+import { Connection, Keypair } from "@solana/web3.js";
+import {
+  KIRITE_PROGRAM_ID,
+  DEFAULT_DENOMINATIONS,
+  generateStealthMetaAddress,
+} from "@kirite/sdk";
+import { deposit, withdraw } from "@kirite/sdk/zk";
+
+const connection = new Connection("https://api.mainnet-beta.solana.com");
+const wallet = Keypair.generate();
+
+// publish a stealth meta-address (one-time setup per recipient)
+const meta = generateStealthMetaAddress(wallet);
+
+// deposit a fixed denomination into the shield pool
+const denomination = DEFAULT_DENOMINATIONS[3]; // 1 SOL
+const note = await deposit({ connection, payer: wallet, denomination });
+// note.ns, note.bf, note.leafIndex → persist on the depositor's device
+
+// later, withdraw to a stealth address (proof generated client-side)
+const sig = await withdraw({
+  connection,
+  note,
+  recipient: stealthAddress.address,
+  relayerUrl: "https://relayer.kirite.dev",
+});
+```
+
+Full SDK docs: [kirite.dev/docs/sdk](https://kirite.dev/docs/sdk).
+
+## Project structure
 
 ```
-KIRITE/
+KIRITE-layer/
 ├── programs/
-│   └── kirite/
-│       └── src/
-│           ├── lib.rs                    # program entrypoint
-│           ├── errors.rs                 # KiriteError variants
-│           ├── events.rs                 # DepositCommitted, WithdrawalProcessed, etc.
-│           ├── instructions/
-│           │   ├── initialize.rs         # initialize_protocol, initialize_shield_pool
-│           │   ├── deposit.rs            # deposit, do_merkle_insert, do_token_transfer
-│           │   ├── withdraw.rs           # withdraw, verify_withdrawal_proof
-│           │   ├── transfer.rs           # confidential_transfer, apply_pending_balance
-│           │   ├── create_stealth.rs     # register_stealth_registry, claim_stealth
-│           │   └── governance.rs         # pause, resume, fee updates, signer rotation
-│           ├── state/
-│           │   ├── protocol.rs           # ProtocolConfig, GovernanceState
-│           │   ├── shield_pool.rs        # ShieldPool, PoolEntry, NullifierSet
-│           │   └── stealth.rs            # StealthRegistry, EphemeralKey
-│           └── utils/
-│               ├── crypto.rs             # twisted elgamal, merkle, ECDH derivation
-│               ├── validation.rs         # input checks, denomination, timelock bounds
-│               └── math.rs               # fee calc, overflow-checked arithmetic
-├── sdk/
+│   ├── kirite/                # privacy program (shield pool + stealth)
+│   │   └── src/
+│   │       ├── lib.rs
+│   │       ├── instructions/  # deposit, withdraw, freeze
+│   │       ├── state/         # ShieldPool, NullifierRecord
+│   │       └── utils/
+│   │           ├── zk.rs            # Groth16 verifier glue
+│   │           └── membership_vk.rs # trusted-setup verifier key
+│   └── kirite-staking/        # $KIRITE staking program (Token-2022)
+├── circuits/
+│   └── membership.circom      # Groth16 membership proof circuit
+├── sdk/                       # @kirite/sdk on npm
 │   └── src/
-│       ├── client.ts                     # KiriteClient main class
-│       ├── types.ts                      # public type definitions
-│       ├── constants.ts                  # program ID, seeds, defaults
-│       ├── errors.ts                     # SDK error classes
-│       ├── confidential/
-│       │   ├── encryption.ts             # ElGamal encrypt/decrypt
-│       │   ├── proof.ts                  # range proof generation
-│       │   └── transfer.ts               # confidential transfer flow
-│       ├── shield-pool/
-│       │   ├── deposit.ts                # build deposit instruction
-│       │   ├── withdraw.ts               # build withdraw instruction
-│       │   └── pool-state.ts             # pool queries, anonymity set size
-│       ├── stealth/
-│       │   ├── address.ts                # one-time address derivation
-│       │   ├── registry.ts               # registry read/write
-│       │   └── scan.ts                   # scan for incoming payments
-│       └── utils/
-│           ├── connection.ts             # RPC helpers
-│           ├── keypair.ts                # key derivation
-│           └── transaction.ts            # tx builder helpers
-├── cli/
-│   └── src/
-│       ├── index.ts                      # commander entrypoint
-│       ├── commands/
-│       │   ├── config.ts                 # config get/set
-│       │   ├── deposit.ts                # pool deposit subcommand
-│       │   ├── withdraw.ts               # pool withdraw subcommand
-│       │   ├── transfer.ts               # confidential transfer subcommand
-│       │   ├── stealth.ts                # stealth scan/generate
-│       │   └── pool.ts                   # pool info queries
-│       └── utils/
-│           ├── config.ts                 # config persistence
-│           ├── wallet.ts                 # keypair loading
-│           └── display.ts                # formatted CLI output
-├── tests/
-│   ├── test-devnet.ts                    # devnet smoke tests
-│   └── test-full.ts                      # full integration suite (28 cases)
-├── examples/
-│   ├── 01-confidential-transfer.ts       # confidential transfer example
-│   ├── 02-shield-pool-deposit.ts         # deposit + nullifier note
-│   └── 03-stealth-address.ts             # generate + scan stealth payments
-├── scripts/
-│   ├── deploy.sh                         # cluster deployment
-│   ├── migrate.ts                        # post-deploy initialization
-│   ├── verify.sh                         # deployment verification
-│   └── idl-publish.sh                    # IDL registry publish
-├── docs/
-│   ├── architecture.md                   # system design
-│   ├── protocol-spec.md                  # cryptographic specification
-│   └── deployment-guide.md               # operator guide
-├── migrations/
-│   └── deploy.ts                         # anchor migration
-├── .github/
-│   ├── workflows/
-│   │   └── ci.yml                        # build, test, lint
-│   ├── ISSUE_TEMPLATE/
-│   │   ├── bug_report.md
-│   │   └── feature_request.md
-│   ├── pull_request_template.md
-│   └── dependabot.yml
-├── Anchor.toml
-├── Cargo.toml
-├── package.json
-├── README.md
-├── LICENSE
-├── CONTRIBUTING.md
-├── CHANGELOG.md
-└── SECURITY.md
+│       ├── kirite-zk.mjs      # v3 deposit/withdraw helpers
+│       ├── staking.mjs        # staking instructions
+│       ├── stealth/           # DKSAP utilities
+│       ├── utils/
+│       └── *.ts               # types, constants, errors
+├── scripts/                   # devnet helpers, init scripts
+├── tests/                     # devnet integration tests
+└── docs/                      # protocol spec
 ```
+
+## Anonymity-set bounds
+
+| Active leaves | Upper bound on linkability per attempt |
+| ------------- | -------------------------------------- |
+| 1             | 100% (effectively transparent)         |
+| 5             | 20%                                    |
+| 16            | 6.25%                                  |
+| 32 (v1 cap)   | 3.1%                                   |
+| 1024 (planned) | 0.1%                                  |
+
+These are upper bounds. Real-world adversaries combine timing and pattern analysis to narrow further. Practical privacy scales with traffic.
+
+## Compliance
+
+- **OFAC SDN auto-refresh** at the relayer (weekly Treasury XML pull)
+- **Freeze authority** for emergency response (cannot move user funds, only halt new activity)
+- **Public reporting channel:** `report@kirite.dev`
+- Full posture: [kirite.dev/docs/compliance](https://kirite.dev/docs/compliance)
 
 ## Security
 
-KIRITE handles encrypted financial data. Report vulnerabilities through the process described in [SECURITY.md](./SECURITY.md). Do not open public issues for security bugs.
+KIRITE has not yet undergone a third-party audit. The trusted setup uses the public Hermez powers-of-tau ceremony with a single Phase 2 contributor. A multi-party ceremony and a paid security review are planned follow-ons. Code is public and commit hashes verify against the deployed program.
 
-## Contributing
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup, code style, and PR guidelines.
+For security disclosures, see [SECURITY.md](./SECURITY.md). Do not open public issues for security bugs.
 
 ## License
 
 [MIT](./LICENSE)
-
-## Deployments
-
-| Network         | Program ID                                       | Status   |
-| --------------- | ------------------------------------------------ | -------- |
-| Solana Devnet   | `4bUHrDPuRcoYPU7UTLojXtxJsWoCj3HJbKX9oLnEnYy6`   | live     |
-| Solana Mainnet  | _pending audit_                                  | upcoming |
-
-Verify the devnet deployment on [Solana Explorer](https://explorer.solana.com/address/4bUHrDPuRcoYPU7UTLojXtxJsWoCj3HJbKX9oLnEnYy6?cluster=devnet).
 
 ## Links
 
 - Website: https://kirite.dev
 - Docs: https://kirite.dev/docs
 - X: https://x.com/KiriteDev
-- GitHub: https://github.com/Kirite-dev/KIRITE-layer
-- Ticker: $KIRITE
+- npm: https://www.npmjs.com/package/@kirite/sdk
+- Ticker: $KIRITE (CA: `7iRJcjWHQMvdMXufPxLWBqfmBvikzETYTyjqnyCjpump`)
