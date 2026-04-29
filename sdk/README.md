@@ -39,26 +39,11 @@ npm install @kirite/sdk @solana/web3.js
 
 ## Architecture
 
-```
-┌──────────────┐     ┌────────────────┐     ┌──────────────────┐
-│ user wallet  │ ──▶ │  Shield Pool   │ ──▶ │ Stealth Address  │
-│  (deposit)   │     │  (Poseidon     │     │  (DKSAP one-time │
-│              │     │   Merkle)      │     │   recipient)     │
-└──────────────┘     └────────────────┘     └──────────────────┘
-                              │
-                              ▼
-                     ┌────────────────┐
-                     │ Groth16 proof  │
-                     │ (browser WASM) │
-                     └────────────────┘
-                              │
-                              ▼
-                     ┌────────────────┐
-                     │    Relayer     │
-                     │ (OFAC SDN +    │
-                     │  withdraw tx)  │
-                     └────────────────┘
-```
+<div align="center">
+
+![KIRITE architecture](https://mermaid.ink/img/Zmxvd2NoYXJ0IExSCiAgICB1c2VyWyJ1c2VyIHdhbGxldCJdIC0tPnxkZXBvc2l0fCBzcFsiU2hpZWxkIFBvb2w8YnIvPlBvc2VpZG9uIE1lcmtsZSJdCiAgICBzcCAtLT58R3JvdGgxNiBwcm9vZnwgcmVsYXllclsiUmVsYXllcjxici8-T0ZBQyBTRE4iXQogICAgcmVsYXllciAtLT58d2l0aGRyYXcgdHh8IHNhWyJTdGVhbHRoIEFkZHJlc3M8YnIvPkRLU0FQIG9uZS10aW1lIl0KICAgIHNhIC0tPnxjbGFpbXwgcmVjaXBpZW50WyJyZWNpcGllbnQgd2FsbGV0Il0KICAgIGNsYXNzRGVmIGxpdmUgZmlsbDojYzhmZjAwLHN0cm9rZTojMGEwYTBhLGNvbG9yOiMwNjA2MDYKICAgIGNsYXNzRGVmIGdob3N0IGZpbGw6IzFhMWExYSxzdHJva2U6I2M4ZmYwMCxjb2xvcjojZmZmCiAgICBjbGFzcyB1c2VyLHJlY2lwaWVudCBsaXZlCiAgICBjbGFzcyBzcCxzYSxyZWxheWVyIGdob3N0?theme=dark&bgColor=060606)
+
+</div>
 
 ## Quick start
 
