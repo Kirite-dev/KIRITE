@@ -58,24 +58,6 @@ pub struct PoolFrozen {
 }
 
 #[event]
-pub struct ConfidentialTransferExecuted {
-    pub sender: Pubkey,
-    pub recipient: Pubkey,
-    pub encrypted_amount_sender: [u8; 64],
-    pub encrypted_amount_recipient: [u8; 64],
-    pub fee_ciphertext: [u8; 64],
-    pub timestamp: i64,
-}
-
-#[event]
-pub struct ConfidentialAccountCreated {
-    pub owner: Pubkey,
-    pub account: Pubkey,
-    pub elgamal_pubkey: [u8; 32],
-    pub timestamp: i64,
-}
-
-#[event]
 pub struct StealthAddressRegistered {
     pub owner: Pubkey,
     pub registry: Pubkey,

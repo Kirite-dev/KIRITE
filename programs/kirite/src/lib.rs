@@ -10,7 +10,6 @@ use instructions::create_stealth::*;
 use instructions::deposit::*;
 use instructions::governance::*;
 use instructions::initialize::*;
-use instructions::transfer::*;
 use instructions::withdraw::*;
 use state::shield_pool::PoolConfig;
 use state::stealth::{CreateStealthParams, ResolveStealthParams};
@@ -56,32 +55,6 @@ pub mod kirite {
     /// depositor-recipient link is broken by design.
     pub fn withdraw(ctx: Context<Withdraw>, params: WithdrawParams) -> Result<()> {
         handle_withdraw(ctx, params)
-    }
-
-    /// Encrypted balance account — transfers update ciphertexts
-    /// homomorphically without revealing amounts on-chain.
-    pub fn create_confidential_account(
-        ctx: Context<CreateConfidentialAccount>,
-        elgamal_pubkey: [u8; 32],
-    ) -> Result<()> {
-        handle_create_confidential_account(ctx, elgamal_pubkey)
-    }
-
-    /// Transfer with dual-key ciphertexts + range/equality proofs.
-    pub fn confidential_transfer(
-        ctx: Context<ConfidentialTransfer>,
-        params: ConfidentialTransferParams,
-    ) -> Result<()> {
-        handle_confidential_transfer(ctx, params)
-    }
-
-    /// Merge pending incoming ciphertexts into the main balance.
-    /// Separated so recipients can decrypt+verify off-chain first.
-    pub fn apply_pending_balance(
-        ctx: Context<ApplyPendingBalance>,
-        expected_nonce: u64,
-    ) -> Result<()> {
-        handle_apply_pending_balance(ctx, expected_nonce)
     }
 
     /// Publish (spend_pubkey, view_pubkey) once. Senders derive
