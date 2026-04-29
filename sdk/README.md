@@ -120,9 +120,11 @@ const sig = await stake({
 
 > Token CA: `7iRJcjWHQMvdMXufPxLWBqfmBvikzETYTyjqnyCjpump`
 
-## Scope
+## How privacy works
 
-KIRITE breaks the deposit ↔ withdraw link and hides the recipient address. Amounts are public (fixed denominations). Practical privacy scales with the active anonymity set in each pool.
+KIRITE breaks the deposit ↔ withdraw link and hides the recipient address. Privacy requires using one of the fixed denominations (`0.01` / `0.05` / `0.1` / `1` / `10` SOL). Every deposit and withdraw in a pool moves the same exact amount, so observers cannot match a withdraw to its specific deposit.
+
+Practical privacy scales with the active anonymity set in each pool.
 
 Full threat model: [kirite.dev/docs/threat-model](https://kirite.dev/docs/threat-model)
 

@@ -43,11 +43,11 @@ Two pieces working together:
 
 Built on Solana's native `alt_bn128` and `poseidon` syscalls. Browser-side proof generation via snarkjs WASM (~1s desktop, ~3s mobile). Non-custodial: the pool authority cannot move user funds.
 
-## Scope
+## How privacy works
 
 KIRITE breaks the deposit ↔ withdraw link and hides the recipient address. Notes stay on the user's device; the vault is PDA-locked.
 
-Amounts are public (fixed denominations). Anonymity is bounded by the active leaf count per pool (32 on v1).
+Privacy requires sending in one of the fixed denominations: `0.01` / `0.05` / `0.1` / `1` / `10` SOL. Every deposit and withdraw in a pool moves the same exact amount, so observers cannot match a withdraw to its specific deposit. Anonymity is bounded by the active leaf count per pool (32 on v1).
 
 ## Status
 
